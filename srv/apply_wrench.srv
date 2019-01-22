@@ -1,0 +1,5 @@
+#service for applying the wrenches to gazebo model
+
+plane_simple/planeForces planeForces
+---
+bool success
