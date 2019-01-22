@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(plane_simple)
+project(last_letter_2)
 
 
 find_package(catkin REQUIRED COMPONENTS
@@ -24,17 +24,17 @@ include_directories(${std_msgs_INCLUDE_DIRS})
 #add_library(box_lib src/box_plugin.cpp)
 #target_link_libraries(box_lib ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES} ${roscpp_LIBRARIES})
 
-add_service_files(
-  FILES
-  apply_wrench.srv
-)
-
 add_message_files(
   FILES
   joystick_input.msg
   InputSignals.msg
   planeForces.msg
   model_states.msg
+)
+
+add_service_files(
+  FILES
+apply_wrench.srv
 )
 
 generate_messages(
@@ -62,7 +62,9 @@ target_link_libraries(basics2forces ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 target_link_libraries(motor_plugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 target_link_libraries(world_plugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
-add_dependencies(basics2forces plane_simple_gencpp)
+add_dependencies(joy2chan last_letter_2_gencpp)
+add_dependencies(chan2basics last_letter_2_gencpp)
+add_dependencies(basics2forces last_letter_2_gencpp)
 
 
 

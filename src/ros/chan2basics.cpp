@@ -1,7 +1,7 @@
 #include <ros/ros.h>
 #include <cstdlib>
-#include <plane_simple/joystick_input.h>
-#include <plane_simple/InputSignals.h>
+#include <last_letter_2/joystick_input.h>
+#include <last_letter_2/InputSignals.h>
 
 
 
@@ -14,9 +14,9 @@ int chanAileron, chanElevator, chanRudder, chanThrottle;
 int id=1;
 double deltaa_max, deltae_max, deltar_max;
 
-plane_simple::InputSignals InputSignals;
+last_letter_2::InputSignals InputSignals;
 
-void chan2input(plane_simple::joystick_input msg)
+void chan2input(last_letter_2::joystick_input msg)
 {
 	//Convert PPM to radians
 	InputSignals.roll= deltaa_max * (double)(msg.value[chanAileron]-1500)/500;
@@ -34,7 +34,7 @@ int main(int argc, char **argv)
 	ros::init(argc, argv, "chan2rpy");
 	ros::NodeHandle n;
 	ros::Subscriber sub = n.subscribe("rawPWM",1,chan2input);
-	pub = n.advertise<plane_simple::InputSignals>("plane_simple/InputSignals",1);
+	pub = n.advertise<last_letter_2::InputSignals>("last_letter_2/InputSignals",1);
 
 	char paramMsg[50];
 	sprintf(paramMsg, "airfoil%i/deltaa_max", id);
