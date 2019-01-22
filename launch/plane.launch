@@ -1,5 +1,5 @@
 <launch>
-      <arg name="model" default="$(find plane_simple)/urdf/plane.urdf.xacro"/>
+      <arg name="model" default="$(find last_letter_2)/urdf/plane.urdf.xacro"/>
   <arg name="gui" default="true" />
 
 
@@ -11,7 +11,7 @@
 
   <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
-  <arg name="world_name" value="$(find plane_simple)/worlds/myworld.world"/>
+  <arg name="world_name" value="$(find last_letter_2)/worlds/myworld.world"/>
     <arg name="debug" value="$(arg debug)" />
     <arg name="gui" value="$(arg gui)" />
     <arg name="paused" value="$(arg paused)"/>
@@ -28,15 +28,15 @@
         args="-z 1.0 -Y 2.1 -unpause -urdf -model plane -param robot_description" respawn="false" output="screen" /> 
       
     
-    <rosparam command="load" file="$(find plane_simple)/param/HID.yaml" />
-    <rosparam command="load" file="$(find plane_simple)/param/aerodynamics.yaml" />
+    <rosparam command="load" file="$(find last_letter_2)/param/HID.yaml" />
+    <rosparam command="load" file="$(find last_letter_2)/param/aerodynamics.yaml" />
     <node pkg="joy" type="joy_node" name="joystick" output="screen" >
       <param name="dev" value="/dev/input/js0" />
       <param name="deadzone" value="0.01" />
     </node>
-    <node pkg="plane_simple" name="joy2chan" type="joy2chan" output="screen" />
-    <node pkg="plane_simple" name="chan2basics" type="chan2basics" output="screen"/>
-    <node pkg="plane_simple" name="basics2forces" type="basics2forces" output="screen" />
+    <node pkg="last_letter_2" name="joy2chan" type="joy2chan" output="screen" />
+    <node pkg="last_letter_2" name="chan2basics" type="chan2basics" output="screen"/>
+    <node pkg="last_letter_2" name="basics2forces" type="basics2forces" output="screen" />
     
     
 </launch>

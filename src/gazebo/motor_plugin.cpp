@@ -4,10 +4,10 @@
 #include <ignition/math/Vector3.hh>
 #include <ignition/math/Quaternion.hh>
 #include "ros/callback_queue.h"
-#include <plane_simple/model_states.h>
+#include <last_letter_2/model_states.h>
 #include <boost/bind.hpp>
-#include <plane_simple/apply_wrench.h>
-#include <plane_simple/planeForces.h>
+#include <last_letter_2/apply_wrench.h>
+#include <last_letter_2/planeForces.h>
 #include <rosgraph_msgs/Clock.h>
 #include <ctime> // for timer
 #include <ros/service.h>
@@ -61,12 +61,12 @@ class add_forces_plugin : public ModelPlugin
 			std::thread(std::bind(&add_forces_plugin::QueueThread, this));
 		//Connect a callback to the world update start signal.
 		this->updateConnection = event::Events::ConnectWorldUpdateEnd(std::bind(&add_forces_plugin::OnUpdate, this));
-		ros::AdvertiseServiceOptions so = (ros::AdvertiseServiceOptions::create<plane_simple::apply_wrench>("apply_wrench_srv",
+		ros::AdvertiseServiceOptions so = (ros::AdvertiseServiceOptions::create<last_letter_2::apply_wrench>("apply_wrench_srv",
 																											boost::bind(&add_forces_plugin::add_wrench, this, _1, _2), ros::VoidPtr(), &this->rosQueue));
 		this->srv_ = this->rosNode->advertiseService(so);
 
 		// Publish code
-		this->pub_ = this->rosNode->advertise<plane_simple::model_states>("plane_simple/model_states", 1000);
+		this->pub_ = this->rosNode->advertise<last_letter_2::model_states>("last_letter_2/model_states", 1000);
 	}
 
 	//  ROS helper function that processes messages
@@ -81,8 +81,8 @@ class add_forces_plugin : public ModelPlugin
 		}
 	}
 
-	bool add_wrench(plane_simple::apply_wrench::Request &req,
-			 plane_simple::apply_wrench::Response &res)
+	bool add_wrench(last_letter_2::apply_wrench::Request &req,
+			 last_letter_2::apply_wrench::Response &res)
 	{
 		ignition::math::Vector3d force, torque;
 		float thrust;
@@ -116,7 +116,7 @@ class add_forces_plugin : public ModelPlugin
 		ignition::math::Vector3d relAngVel;
 		relAngVel = model->GetLink("airfoil")->RelativeAngularVel();
 
-		plane_simple::model_states model_states;
+		last_letter_2::model_states model_states;
 		model_states.header.stamp = ros::Time::now();
 		model_states.roll = rotation[0];
 		model_states.pitch = -rotation[1];

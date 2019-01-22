@@ -1,9 +1,9 @@
 #include <ros/ros.h>
 #include <cstdlib>
-#include "plane_simple/InputSignals.h"
-#include <plane_simple/planeForces.h>
-#include <plane_simple/model_states.h>
-#include "plane_simple/apply_wrench.h"
+#include "last_letter_2/InputSignals.h"
+#include <last_letter_2/planeForces.h>
+#include <last_letter_2/model_states.h>
+#include "last_letter_2/apply_wrench.h"
 #include "ros/service.h"
 #include <math.h>
 #include <rosgraph_msgs/Clock.h>
@@ -51,8 +51,8 @@ class force_calculator
 	ros::NodeHandle nh;
 	bool flagok = false;
 
-	plane_simple::planeForces planeForces;
-	plane_simple::apply_wrench srv;
+	last_letter_2::planeForces planeForces;
+	last_letter_2::apply_wrench srv;
 	ros::Publisher pub1;
 	ros::Publisher pub2;
 	ros::ServiceClient wrench_client;
@@ -69,19 +69,19 @@ class force_calculator
 		ROS_INFO("Starting constructor");
 
 		//subscribers
-		sub_basic_signals = nh.subscribe("plane_simple/InputSignals", 1, &force_calculator::store_rpy_thr, this);
-		sub_model_states = nh.subscribe("plane_simple/model_states", 1, &force_calculator::model_states, this);
+		sub_basic_signals = nh.subscribe("last_letter_2/InputSignals", 1, &force_calculator::store_rpy_thr, this);
+		sub_model_states = nh.subscribe("last_letter_2/model_states", 1, &force_calculator::model_states, this);
 
 		//publishers
-		pub1 = nh.advertise<plane_simple::planeForces>("plane_simple/planeForces", 1000);
+		pub1 = nh.advertise<last_letter_2::planeForces>("last_letter_2/planeForces", 1000);
 
 		//services
 		//srv for sending wrench to gazebo
 		ros::service::waitForService("apply_wrench_srv");
-		wrench_client = nh.serviceClient<plane_simple::apply_wrench>("apply_wrench_srv", true);
+		wrench_client = nh.serviceClient<last_letter_2::apply_wrench>("apply_wrench_srv", true);
 		//srv for give step to gazebo
 		ros::service::waitForService("step");
-		step_client = nh.serviceClient<plane_simple::apply_wrench>("step", true);
+		step_client = nh.serviceClient<last_letter_2::apply_wrench>("step", true);
 		//srv for pause gazebo
 		ros::service::waitForService("/gazebo/pause_physics");
 		pauseGazebo = nh.serviceClient<std_srvs::Empty>("/gazebo/pause_physics");
@@ -93,7 +93,7 @@ class force_calculator
 		ROS_INFO("Done with constructor");
 	}
 
-	void store_rpy_thr(const plane_simple::InputSignals::ConstPtr &msg)
+	void store_rpy_thr(const last_letter_2::InputSignals::ConstPtr &msg)
 	{
 		// printf("ros get joy=%li\n", clock());
 		delta_a = msg->roll;
@@ -102,7 +102,7 @@ class force_calculator
 		delta_t = msg->throttle;
 	}
 
-	void model_states(const plane_simple::model_states &msg)
+	void model_states(const last_letter_2::model_states &msg)
 	{
 		//get Rotation, Linear Vel, Angular Vel
 		roll = msg.roll;
