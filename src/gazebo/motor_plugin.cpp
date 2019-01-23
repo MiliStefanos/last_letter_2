@@ -15,7 +15,7 @@
 
 namespace gazebo
 {
-class add_forces_plugin : public ModelPlugin
+class model_plugin : public ModelPlugin
 {
 	// Pointer to the model
   private:
@@ -41,14 +41,14 @@ class add_forces_plugin : public ModelPlugin
 	std::thread rosQueueThread;
 
   public:
-	add_forces_plugin() : ModelPlugin() //constructor
+	model_plugin() : ModelPlugin() //constructor
 	{
 	}
 
 	void Load(physics::ModelPtr _model, sdf::ElementPtr _sdf) //Called when a Plugin is first created,
 	{														  //and after the World has been loaded.Νot be blocking.
 		this->model = _model;
-		ROS_INFO("add_forces_plugin just started");
+		ROS_INFO("model_plugin just started");
 
 		this->rosNode = new ros::NodeHandle; //Create a ros node for transport
 		while (!this->rosNode->ok())
@@ -58,11 +58,11 @@ class add_forces_plugin : public ModelPlugin
 
 		// Spin up the queue helper thread.
 		this->rosQueueThread =
-			std::thread(std::bind(&add_forces_plugin::QueueThread, this));
+			std::thread(std::bind(&model_plugin::QueueThread, this));
 		//Connect a callback to the world update start signal.
-		this->updateConnection = event::Events::ConnectWorldUpdateEnd(std::bind(&add_forces_plugin::OnUpdate, this));
+		this->updateConnection = event::Events::ConnectWorldUpdateEnd(std::bind(&model_plugin::OnUpdate, this));
 		ros::AdvertiseServiceOptions so = (ros::AdvertiseServiceOptions::create<last_letter_2::apply_wrench>("apply_wrench_srv",
-																											boost::bind(&add_forces_plugin::add_wrench, this, _1, _2), ros::VoidPtr(), &this->rosQueue));
+																											boost::bind(&model_plugin::add_wrench, this, _1, _2), ros::VoidPtr(), &this->rosQueue));
 		this->srv_ = this->rosNode->advertiseService(so);
 
 		// Publish code
@@ -131,5 +131,5 @@ class add_forces_plugin : public ModelPlugin
 	}
 };
 // Register this plugin with the simulator
-GZ_REGISTER_MODEL_PLUGIN(add_forces_plugin)
+GZ_REGISTER_MODEL_PLUGIN(model_plugin)
 } // namespace gazebo
