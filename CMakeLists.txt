@@ -42,7 +42,7 @@ generate_messages(
   std_msgs
 )
 
-add_library(motor_plugin src/gazebo/motor_plugin.cpp)
+add_library(model_plugin src/gazebo/model_plugin.cpp)
 add_library(world_plugin SHARED src/gazebo/world_plugin.cpp)
 
 catkin_package(DEPENDS
@@ -59,7 +59,7 @@ add_executable(basics2forces src/ros/basics2forces.cpp)
 target_link_libraries(joy2chan ${catkin_LIBRARIES})
 target_link_libraries(chan2basics ${catkin_LIBRARIES})
 target_link_libraries(basics2forces ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
-target_link_libraries(motor_plugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+target_link_libraries(model_plugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 target_link_libraries(world_plugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 add_dependencies(joy2chan last_letter_2_gencpp)
