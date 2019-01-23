@@ -4,30 +4,30 @@
 	<version>0.0.0</version>
 	<description>Last_letter simulator with Gazebo</description>
 
-	<maintainer email="me@todo.todo">me</maintainer>
+	<maintainer email="tailwhipx4@gmail.com">George Zogopoulos-Papaliakos</maintainer>
 
 
 	<license>GPL-3.0</license>
 
 
 	<buildtool_depend>catkin</buildtool_depend>
-	<!-- <build_depend>gazebo_msgs</build_depend> -->
 	<build_depend>geometry_msgs</build_depend>
 	<build_depend>roscpp</build_depend>
 	<build_depend>sensor_msgs</build_depend>
 	<build_depend>message_generation</build_depend>
 	<build_depend>std_msgs</build_depend>
-	<!-- <build_export_depend>gazebo_msgs</build_export_depend> -->
+	<build_depend>gazebo_ros_pkgs</build_depend>
 	<build_export_depend>geometry_msgs</build_export_depend>
 	<build_export_depend>roscpp</build_export_depend>
 	<build_export_depend>sensor_msgs</build_export_depend>
 	<build_export_depend>std_msgs</build_export_depend>
-	<!-- <exec_depend>gazebo_msgs</exec_depend> -->
+	<build_export_depend>gazebo_ros_pkgs</build_export_depend>
 	<exec_depend>roscpp</exec_depend>
 	<exec_depend>std_msgs</exec_depend>
 	<exec_depend>sensor_msgs</exec_depend>
 	<exec_depend>geometry_msgs</exec_depend>
 	<exec_depend>message_runtime</exec_depend>
+	<exec_depend>gazebo_ros_pkgs</exec_depend>
 
 	<!-- The export tag contains other, unspecified, tags -->
 	<export>
