@@ -203,7 +203,7 @@
 	</joint>
 
 	<gazebo>
-    <plugin name="motor_plugin" filename="libmotor_plugin.so"/>
+    <plugin name="model_plugin" filename="libmodel_plugin.so"/>
   </gazebo>
 
 </robot>
