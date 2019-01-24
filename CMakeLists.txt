@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-set(CMAKE_CXX_FLAGS “-std=c++0x ${CMAKE_CXX_FLAGS}”)
+# set(CMAKE_CXX_FLAGS “-std=c++11 ${CMAKE_CXX_FLAGS}”)
 
 project(last_letter_2)
 
@@ -36,7 +36,7 @@ add_message_files(
 
 add_service_files(
   FILES
-apply_wrench.srv
+  apply_wrench.srv
 )
 
 generate_messages(
@@ -57,16 +57,17 @@ add_executable(joy2chan src/ros/joy2chan.cpp)
 add_executable(chan2basics src/ros/chan2basics.cpp) 
 add_executable(basics2forces src/ros/basics2forces.cpp)
 
+add_dependencies(joy2chan ${PROJECT_NAME}_gencpp ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(chan2basics ${PROJECT_NAME}_gencpp ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(basics2forces ${PROJECT_NAME}_gencpp ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(model_plugin ${PROJECT_NAME}_gencpp ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(world_plugin ${PROJECT_NAME}_gencpp ${PROJECT_NAME}_generate_messages_cpp)
 
 target_link_libraries(joy2chan ${catkin_LIBRARIES})
 target_link_libraries(chan2basics ${catkin_LIBRARIES})
 target_link_libraries(basics2forces ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 target_link_libraries(model_plugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 target_link_libraries(world_plugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
-
-add_dependencies(joy2chan last_letter_2_gencpp)
-add_dependencies(chan2basics last_letter_2_gencpp)
-add_dependencies(basics2forces last_letter_2_gencpp)
 
 
 
