@@ -72,7 +72,7 @@ before_install:
   - sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
   - sudo apt-get update -qq
   - sudo apt-get install dpkg apt-utils sudo vim git wget
-  - sudo echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list
+  - sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
   - sudo wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
   - sudo apt-get update
   - sudo apt-get install -y libignition-math4-dev
