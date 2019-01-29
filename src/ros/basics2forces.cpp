@@ -44,7 +44,6 @@ class force_calculator
 	float M = 50;
 	float oswald;
 	float a0;
-	clock_t t1;
 
 	geometry_msgs::Quaternion quat;
 	geometry_msgs::Vector3 Va;
@@ -62,7 +61,6 @@ class force_calculator
 	ros::Subscriber sub_basic_signals;
 	ros::Subscriber sub_model_states;
 	ros::Subscriber sub3;
-	int gazeboFlag;
 
 	force_calculator() //constructor
 	{
@@ -82,11 +80,6 @@ class force_calculator
 		//srv for give step to gazebo
 		ros::service::waitForService("step");
 		step_client = nh.serviceClient<last_letter_2::apply_wrench>("step", true);
-		//srv for pause gazebo
-		ros::service::waitForService("/gazebo/pause_physics");
-		pauseGazebo = nh.serviceClient<std_srvs::Empty>("/gazebo/pause_physics");
-		std_srvs::Empty emptySrv;
-		pauseGazebo.call(emptySrv); //pause gazebo simulator
 
 		init_param();
 
@@ -197,6 +190,7 @@ class force_calculator
 		// prepare service to call - - - - - - - - - -
 		srv.request.planeForces = planeForces;
 
+		//call apply_wrench_srv
 		if (wrench_client.isValid())
 		{
 			if (wrench_client.call(srv))
@@ -215,28 +209,25 @@ class force_calculator
 			//		    connectToClient(); //Why this??
 		}
 
-		// if (step_client.isValid())
-		// {
-		// 	// printf("ros: call gazebo plugin srv to step\n");
-		// 	if (step_client.call(srv))
-		// 	{
-		// 		// printf("persistent connection at %f sec\n",double(clock()-t1)/CLOCKS_PER_SEC);
-
-		// 		// ROS_INFO("succeed service call\n");
-		// 	}
-		// 	else
-		// 	{
-		// 		ROS_ERROR("Failed to call service apply_wrench_srv\n");
-		// 		//			break;
-		// 	}
-		// 	// loop_rate.sleep();
-		// }
-		// else
-		// {
-		// 	ROS_ERROR("Service down, waiting reconnection...");
-		// 	step_client.waitForExistence();
-		// 	//		    connectToClient(); //Why this??
-		// }
+		//call step srv
+		if (step_client.isValid())
+		{
+			if (step_client.call(srv))
+			{
+				// ROS_INFO("succeed service call\n");
+			}
+			else
+			{
+				ROS_ERROR("Failed to call service apply_wrench_srv\n");
+				//			break;
+			}
+		}
+		else
+		{
+			ROS_ERROR("Service down, waiting reconnection...");
+			step_client.waitForExistence();
+			//		    connectToClient(); //Why this??
+		}
 	}
 
 	void init_param()

@@ -8,6 +8,12 @@
     <include>
       <uri>model://sun</uri>
     </include>
+    <physics type="ode">
+
+      <!-- run at 400Hz -->
+      <max_step_size>0.0025</max_step_size>         
+      <real_time_update_rate>400</real_time_update_rate>
+    </physics>
 
     <!-- reference to your plugin -->
     <plugin name="world_plugin" filename="libworld_plugin.so"/>

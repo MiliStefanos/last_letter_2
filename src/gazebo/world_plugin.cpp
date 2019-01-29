@@ -86,7 +86,7 @@ public:
 
   void OnUpdate()
   {
-    // printf("gazebo: make a step. dequeue force buffer\n");
+    
   }
 };
 // Register this plugin with the simulator
