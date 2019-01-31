@@ -60,7 +60,7 @@ public:
     // Connect a callback to the world update start signal.
     this->updateConnection = event::Events::ConnectWorldUpdateBegin(std::bind(&stepper::OnUpdate, this));
     ros::AdvertiseServiceOptions so = (ros::AdvertiseServiceOptions::create<last_letter_2::apply_wrench>("step",
-                                                                                                      boost::bind(&stepper::give_step, this, _1, _2), ros::VoidPtr(), &this->rosQueue));
+                                                                                                         boost::bind(&stepper::give_step, this, _1, _2), ros::VoidPtr(), &this->rosQueue));
     this->srv_ = this->rosNode->advertiseService(so);
   }
 
@@ -77,7 +77,7 @@ public:
   }
 
   bool give_step(last_letter_2::apply_wrench::Request &req,
-           last_letter_2::apply_wrench::Response &res)
+                 last_letter_2::apply_wrench::Response &res)
   {
     this->World->Step(1);
 
@@ -86,7 +86,6 @@ public:
 
   void OnUpdate()
   {
-    
   }
 };
 // Register this plugin with the simulator

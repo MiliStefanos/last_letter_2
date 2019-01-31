@@ -2,19 +2,14 @@
 #include <cstdlib>
 #include "last_letter_2/InputSignals.h"
 #include <last_letter_2/planeForces.h>
-#include <last_letter_2/model_states.h>
+#include <last_letter_2/Model_states.h>
 #include "last_letter_2/apply_wrench.h"
 #include "ros/service.h"
 #include <math.h>
 #include <rosgraph_msgs/Clock.h>
-#include <gazebo_msgs/ModelStates.h>
 #include <geometry_msgs/Quaternion.h>
 #include <geometry_msgs/Vector3.h>
 #include <ctime>
-#include <std_srvs/Empty.h>
-#include <std_msgs/Int8.h>
-#include <gazebo_msgs/GetLinkState.h>
-#include <gazebo_msgs/LinkState.h>
 
 class force_calculator
 {
@@ -95,7 +90,7 @@ class force_calculator
 		delta_t = msg->throttle;
 	}
 
-	void model_states(const last_letter_2::model_states &msg)
+	void model_states(const last_letter_2::Model_states &msg)
 	{
 		//get Rotation, Linear Vel, Angular Vel
 		roll = msg.roll;

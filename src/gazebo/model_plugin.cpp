@@ -1,16 +1,17 @@
-#include <gazebo/gazebo_client.hh> //gazebo version >6
 #include <ros/ros.h>
+#include "ros/callback_queue.h"
+#include <ros/service.h>
+#include <rosgraph_msgs/Clock.h>
+#include <gazebo/gazebo_client.hh> //gazebo version >6
 #include <gazebo/physics/physics.hh>
 #include <ignition/math/Vector3.hh>
 #include <ignition/math/Quaternion.hh>
-#include "ros/callback_queue.h"
-#include <last_letter_2/model_states.h>
-#include <boost/bind.hpp>
+#include <last_letter_2/Model_states.h>
 #include <last_letter_2/apply_wrench.h>
+#include <last_letter_2/model_states_srv.h>
 #include <last_letter_2/planeForces.h>
-#include <rosgraph_msgs/Clock.h>
+#include <boost/bind.hpp>
 #include <ctime> // for timer
-#include <ros/service.h>
 #include <iostream>
 
 namespace gazebo
@@ -32,10 +33,12 @@ class model_plugin : public ModelPlugin
 
 	// ROS publisher
 	ros::Publisher pub_;
-	ros::ServiceServer srv_;
+	ros::ServiceServer wrenches_server;
+	ros::ServiceServer states_server;
 
 	///  A ROS callbackqueue that helps process messages
-	ros::CallbackQueue rosQueue;
+	ros::CallbackQueue wrenches_rosQueue;
+	ros::CallbackQueue states_rosQueue;
 
 	///  A thread the keeps running the rosQueue
 	std::thread rosQueueThread;
@@ -62,11 +65,13 @@ class model_plugin : public ModelPlugin
 		//Connect a callback to the world update start signal.
 		this->updateConnection = event::Events::ConnectWorldUpdateEnd(std::bind(&model_plugin::OnUpdate, this));
 		ros::AdvertiseServiceOptions so = (ros::AdvertiseServiceOptions::create<last_letter_2::apply_wrench>("apply_wrench_srv",
-																											boost::bind(&model_plugin::add_wrench, this, _1, _2), ros::VoidPtr(), &this->rosQueue));
-		this->srv_ = this->rosNode->advertiseService(so);
-
+																											 boost::bind(&model_plugin::add_wrench, this, _1, _2), ros::VoidPtr(), &this->wrenches_rosQueue));
+		this->wrenches_server = this->rosNode->advertiseService(so);
+		so = (ros::AdvertiseServiceOptions::create<last_letter_2::model_states_srv>("last_letter_2/model_states",
+																											 boost::bind(&model_plugin::send_states, this, _1, _2), ros::VoidPtr(), &this->states_rosQueue));
+		this->states_server = this->rosNode->advertiseService(so);
 		// Publish code
-		this->pub_ = this->rosNode->advertise<last_letter_2::model_states>("last_letter_2/model_states", 1000);
+		this->pub_ = this->rosNode->advertise<last_letter_2::Model_states>("last_letter_2/model_states", 1000);
 	}
 
 	//  ROS helper function that processes messages
@@ -77,12 +82,13 @@ class model_plugin : public ModelPlugin
 		while (this->rosNode->ok())
 		{
 			// this->rosQueue.callAvailable(ros::WallDuration(timeout));
-			this->rosQueue.callAvailable();
+			this->wrenches_rosQueue.callAvailable();
+			this->states_rosQueue.callAvailable();
 		}
 	}
 
 	bool add_wrench(last_letter_2::apply_wrench::Request &req,
-			 last_letter_2::apply_wrench::Response &res)
+					last_letter_2::apply_wrench::Response &res)
 	{
 		ignition::math::Vector3d force, torque;
 		float thrust;
@@ -107,7 +113,8 @@ class model_plugin : public ModelPlugin
 		return true;
 	}
 
-	void OnUpdate()
+	bool send_states(last_letter_2::model_states_srv::Request &req,
+					last_letter_2::model_states_srv::Response &res)
 	{
 		ignition::math::Vector3d relLinVel;
 		relLinVel = model->GetLink("airfoil")->RelativeLinearVel();
@@ -115,9 +122,14 @@ class model_plugin : public ModelPlugin
 		rotation = model->GetLink("airfoil")->WorldPose().Rot().Euler();
 		ignition::math::Vector3d relAngVel;
 		relAngVel = model->GetLink("airfoil")->RelativeAngularVel();
+		ignition::math::Vector3d position;
+		position = model->GetLink("airfoil")->WorldPose().Pos();
 
-		last_letter_2::model_states model_states;
+		last_letter_2::Model_states model_states;
 		model_states.header.stamp = ros::Time::now();
+		model_states.x= position[0];
+		model_states.y= position[1];
+		model_states.z= position[2];
 		model_states.roll = rotation[0];
 		model_states.pitch = -rotation[1];
 		model_states.yaw = -rotation[2];
@@ -127,7 +139,14 @@ class model_plugin : public ModelPlugin
 		model_states.p = relAngVel[0];
 		model_states.q = -relAngVel[1];
 		model_states.r = -relAngVel[2];
-		pub_.publish(model_states);
+		res.model_states=model_states;
+
+		return true;
+	}
+
+	void OnUpdate()
+	{
+		
 	}
 };
 // Register this plugin with the simulator
