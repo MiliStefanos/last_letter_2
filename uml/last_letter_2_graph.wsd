@@ -1,0 +1,128 @@
+@startuml
+
+class msgs{
+        joystick_input
+        input_signals
+        control_signals
+        model_states
+        model_wrenches
+        air_data
+        aero_wrenches
+        prop_wrenches
+}
+
+class services{
+    airdata_srv
+    apply_wrench_srv
+    get_control_signals_srv
+    get_model_states_srv
+}
+    
+namespace Ros{
+
+    
+    class Master{
+        model
+        Master()
+        ~Master()
+        gazebo_clk_clb()
+    }
+
+    class Model{
+        model_states
+        airdata
+        control_signals
+        model_wrenches
+        aerodynamics
+        propulsion
+        Model()
+        ' ~Model()
+        modelStep()
+        getStates()
+        getControlSignals()
+        getAirdata()
+        calcWrenches()
+        applyWrenches()
+        simulationStep()
+    }
+
+    class Aerodynamics{
+        aero_wrenches
+        *model
+        Aerodynamics(Model *)
+        ' ~Aerodynamics()
+        initParam()
+        calcWrench()
+        calcAdditionalData()
+        calcForces()
+        calcTorques()
+    }
+
+    class Propulsion{
+        prop_wrenches
+        *model
+        Propulsion(Model *)
+        ' ~Propulsion()
+        initParam()
+        calcWrench()
+        calcAdditionalData()
+        calcThrust()
+        calcTorque()
+    }
+
+    class Environment{
+        airdata
+        Environment()
+        ~Environment()
+        calc_airdata()
+    }
+    class Controller_node{
+        model_states
+        sensor_data
+        control_signals
+        Controller(Model *)
+        ~Controller()
+        signal_callback()
+        send_control_signals()
+    }
+}
+
+
+
+namespace Gazebo{
+    class world_plugin{
+        world
+        ' camera_view()
+        give_step()
+    }
+    
+    class model_plugin{
+        model_states
+        return_states()
+        apply_wrenches_on_model()
+    }
+
+    class sensor_plugin{
+        model_states
+        sensor_data
+        pub_sensor_data()
+    }
+}
+
+
+Ros.Master --> Ros.Model
+Ros.Controller_node -> Ros.Model : control_signals_flag (topic)
+Ros.Model <-- Ros.Propulsion
+Ros.Environment <-> Ros.Model : pose -airdata (srv)
+Ros.Aerodynamics --> Ros.Model
+Ros.Model --> Gazebo.model_plugin : wrenches    (srv)
+Ros.Model <-- Gazebo.model_plugin : model_states (srv)
+Ros.Controller_node <-- Gazebo.sensor_plugin :sensor_data (topic)
+Ros.Model -> Gazebo.world_plugin : step (srv)
+Ros.Model <-- Ros.Controller_node : control_signals (srv)
+Ros.Master <- Gazebo.world_plugin : clock (topic)
+
+' Gazebo.model_plugin - Gazebo.sensor_plugin
+' Gazebo.world_plugin - Gazebo.model_plugin
+
+@enduml
