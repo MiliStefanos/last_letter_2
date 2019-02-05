@@ -1,6 +1,6 @@
 #service for gettin airdata from environment
-#send the position xyz of model, and get airdata
+#send the states of model, and get airdata
 
-geometry_msgs/Point model_pose
+last_letter_2/Model_states states
 ---
-last_letter_2/Airdata airdata
+last_letter_2/Air_data airdata
