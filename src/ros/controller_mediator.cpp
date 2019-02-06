@@ -5,7 +5,7 @@
 
 float delta_a=0, delta_e=0, delta_r=0, delta_t=0;
 
-void signal_callback(const last_letter_2::control_signals::ConstPtr &msg)
+void get_controller_signals(const last_letter_2::control_signals::ConstPtr &msg)
 {
     delta_a=msg->delta_a;
     delta_e=msg->delta_e;
@@ -25,11 +25,11 @@ bool send_control_signals(last_letter_2::get_control_signals_srv::Request &req,
 
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "controller_node");
+    ros::init(argc, argv, "controller_mediator");
     printf("controller_node: just start\n");
 
     ros::NodeHandle nh;	
-    ros::Subscriber joystick_input = nh.subscribe("last_letter_2/Joy_signals", 1000, signal_callback);
+    ros::Subscriber controller_outputs = nh.subscribe("last_letter_2/controller_output_signals", 1000, get_controller_signals);
     ros::ServiceServer control_signals_server = nh.advertiseService("last_letter_2/control_signals", send_control_signals);
     
     while(ros::ok())

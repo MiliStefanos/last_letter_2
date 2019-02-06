@@ -76,14 +76,26 @@ namespace Ros{
         ~Environment()
         calc_airdata()
     }
-    class Controller_node{
+    class Controller_mediator{
         model_states
         sensor_data
         control_signals
         Controller(Model *)
-        ~Controller()
-        signal_callback()
+        ' ~Controller()
+        get_controller_signals()
         send_control_signals()
+    }
+
+    class Controller{
+        model_states
+        control_input_signals
+        control_output_signals
+        Controller() 
+        get_joystick_signals()
+        get_model_states()
+        make_controller_step()
+        calcOutputs()
+        publish_outputs()
     }
 }
 
@@ -111,18 +123,19 @@ namespace Gazebo{
 
 
 Ros.Master --> Ros.Model
-Ros.Controller_node -> Ros.Model : control_signals_flag (topic)
-Ros.Model <-- Ros.Propulsion
+Ros.Controller_mediator --> Ros.Model : control_signals_flag (topic)
+Ros.Propulsion --> Ros.Model
 Ros.Environment <-> Ros.Model : pose -airdata (srv)
 Ros.Aerodynamics --> Ros.Model
-Ros.Model --> Gazebo.model_plugin : wrenches    (srv)
-Ros.Model <-- Gazebo.model_plugin : model_states (srv)
-Ros.Controller_node <-- Gazebo.sensor_plugin :sensor_data (topic)
+Gazebo.model_plugin <-- Ros.Model : wrenches    (srv)
+Ros.Model <- Gazebo.model_plugin : model_states (srv)
+Ros.Controller <- Gazebo.sensor_plugin :sensor_data (topic)
 Ros.Model -> Gazebo.world_plugin : step (srv)
-Ros.Model <-- Ros.Controller_node : control_signals (srv)
-Ros.Master <- Gazebo.world_plugin : clock (topic)
-
-' Gazebo.model_plugin - Gazebo.sensor_plugin
-' Gazebo.world_plugin - Gazebo.model_plugin
-
+Ros.Model <-- Ros.Controller_mediator : control_signals (srv)
+Gazebo.world_plugin --> Ros.Master : clock (topic)
+Ros.Controller_mediator <-- Ros.Controller :control_signals (topic)
+Ros.Controller <- Gazebo.model_plugin :model_states (topic)
+Gazebo.world_plugin .. Gazebo.model_plugin
+Gazebo.model_plugin .. Gazebo.sensor_plugin
+Ros.Joystick -> Ros.Controller
 @enduml

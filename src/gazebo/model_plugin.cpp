@@ -43,6 +43,7 @@ class model_plugin : public ModelPlugin
     ///  A thread the keeps running the rosQueue
     std::thread rosQueueThread;
 
+    last_letter_2::model_states model_states;
   public:
     model_plugin() : ModelPlugin() //constructor
     {
@@ -116,6 +117,12 @@ class model_plugin : public ModelPlugin
     bool return_states(last_letter_2::get_model_states_srv::Request &req,
                        last_letter_2::get_model_states_srv::Response &res)
     {
+        res.model_states = model_states;
+        return true;
+    }
+
+    void OnUpdate()
+    {
         ignition::math::Vector3d relLinVel;
         relLinVel = model->GetLink("airfoil")->RelativeLinearVel();
         ignition::math::Vector3d rotation;
@@ -125,7 +132,6 @@ class model_plugin : public ModelPlugin
         ignition::math::Vector3d position;
         position = model->GetLink("airfoil")->WorldPose().Pos();
 
-        last_letter_2::model_states model_states;
         model_states.header.stamp = ros::Time::now();
         model_states.x = position[0];
         model_states.y = position[1];
@@ -139,13 +145,7 @@ class model_plugin : public ModelPlugin
         model_states.p = relAngVel[0];
         model_states.q = -relAngVel[1];
         model_states.r = -relAngVel[2];
-        res.model_states = model_states;
-
-        return true;
-    }
-
-    void OnUpdate()
-    {
+        this->state_pub.publish(model_states);
     }
 };
 // Register this plugin with the simulator
