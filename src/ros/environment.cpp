@@ -90,7 +90,7 @@ bool Environment::calc_airdata(last_letter_2::airdata_srv::Request& req, last_le
 //Calculate temperature
 void Environment::calcTemp()
 {
-    double altitude = 1; // need fix
+    double altitude = states.z;
     airdata.temperature = T0 + altitude/1000.0 * L0;
 }
 
@@ -165,7 +165,7 @@ void Environment::calcWind()
 
 void Environment::calcDens()
 {
-    double altitude=1; //need fix
+    double altitude = states.z;
     double Hb = 0, Tb = T0, Pb = P0, L = L0;
     double alt2pressRatio = (Pb / P0) * pow(1 - (L / Tb) * (altitude/1000.0 - Hb), ((1000.0 * grav0) / (Rd * L))); //Corrected to 1 - (L/...)
     double alt2tempRatio =  airdata.temperature / T0;
@@ -177,7 +177,7 @@ void Environment::calcDens()
 //Calculate barometric pressure
 void Environment::calcPres()
 {
-    double altitude=1; // need fix
+    double altitude = states.z;
     double pressure;
     double Hb = 0, Tb = T0, Pb = P0, L = L0;
     pressure = Pb * pow(1 - (L / Tb) * (altitude/1000.0 - Hb), ((1000.0 * grav0) / (Rd * L))); //Corrected to 1 - (L/...)
