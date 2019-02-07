@@ -71,15 +71,14 @@ class Controller
     void calcOutputs()
     {
         // calculate new outputs
-    }
-
-    void publishOutputs()
-    {
         control_output_signals.delta_a = control_input_signals.delta_a;
         control_output_signals.delta_e = control_input_signals.delta_e;
         control_output_signals.delta_r = control_input_signals.delta_r;
         control_output_signals.delta_t = control_input_signals.delta_t;
+    }
 
+    void publishOutputs()
+    {
         //    publish controller outputs
         controller_output.publish(control_output_signals);
     }
