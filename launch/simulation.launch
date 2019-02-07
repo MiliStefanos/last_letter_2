@@ -31,6 +31,7 @@
   <rosparam command="load" file="$(find last_letter_2)/param/aerodynamics.yaml" />
   <rosparam command="load" file="$(find last_letter_2)/param/environment.yaml" />
   <rosparam command="load" file="$(find last_letter_2)/param/world.yaml" />
+  <rosparam command="load" file="$(find last_letter_2)/param/simulation.yaml" />
   
   <node pkg="joy" type="joy_node" name="joystick" output="screen" >
     <param name="dev" value="/dev/input/js0" />
@@ -38,9 +39,10 @@
   </node>
   <node pkg="last_letter_2" name="joy2chan" type="joy2chan" output="screen" />
   <node pkg="last_letter_2" name="chan2basics" type="chan2basics" output="screen"/>
-  <node pkg="last_letter_2" name="controller_node" type="controller_node" output="screen" />
+  <node pkg="last_letter_2" name="controller_mediator" type="controller_mediator" output="screen" />
   <node pkg="last_letter_2" name="core" type="core" output="screen" />
   <node pkg="last_letter_2" name="environment" type="environment" output="screen" />
+  <node pkg="last_letter_2" name="controller" type="controller" output="screen" />
     
 </launch>
     

@@ -34,7 +34,7 @@ class model_plugin : public ModelPlugin
     // ROS publisher
     ros::Publisher state_pub;
     ros::ServiceServer apply_wrenches_server;
-    ros::ServiceServer return_states_server;
+    ros::ServiceServer returnStates_server;
 
     ///  A ROS callbackqueue that helps process messages
     ros::CallbackQueue wrenches_rosQueue;
@@ -43,6 +43,7 @@ class model_plugin : public ModelPlugin
     ///  A thread the keeps running the rosQueue
     std::thread rosQueueThread;
 
+    last_letter_2::model_states model_states;
   public:
     model_plugin() : ModelPlugin() //constructor
     {
@@ -65,11 +66,11 @@ class model_plugin : public ModelPlugin
         //Connect a callback to the world update start signal.
         this->updateConnection = event::Events::ConnectWorldUpdateEnd(std::bind(&model_plugin::OnUpdate, this));
         ros::AdvertiseServiceOptions so = (ros::AdvertiseServiceOptions::create<last_letter_2::apply_wrench_srv>("last_letter_2/apply_wrench_srv",
-                                                                                                                 boost::bind(&model_plugin::apply_wrench_on_model, this, _1, _2), ros::VoidPtr(), &this->wrenches_rosQueue));
+                                                                                                                 boost::bind(&model_plugin::applyWrenchOnModel, this, _1, _2), ros::VoidPtr(), &this->wrenches_rosQueue));
         this->apply_wrenches_server = this->rosNode->advertiseService(so);
         so = (ros::AdvertiseServiceOptions::create<last_letter_2::get_model_states_srv>("last_letter_2/model_states",
-                                                                                        boost::bind(&model_plugin::return_states, this, _1, _2), ros::VoidPtr(), &this->states_rosQueue));
-        this->return_states_server = this->rosNode->advertiseService(so);
+                                                                                        boost::bind(&model_plugin::returnStates, this, _1, _2), ros::VoidPtr(), &this->states_rosQueue));
+        this->returnStates_server = this->rosNode->advertiseService(so);
         // Publish code
         this->state_pub = this->rosNode->advertise<last_letter_2::model_states>("last_letter_2/model_states", 1000);
     }
@@ -87,7 +88,7 @@ class model_plugin : public ModelPlugin
         }
     }
 
-    bool apply_wrench_on_model(last_letter_2::apply_wrench_srv::Request &req,
+    bool applyWrenchOnModel(last_letter_2::apply_wrench_srv::Request &req,
                                last_letter_2::apply_wrench_srv::Response &res)
     {
         ignition::math::Vector3d force, torque;
@@ -113,8 +114,14 @@ class model_plugin : public ModelPlugin
         return true;
     }
 
-    bool return_states(last_letter_2::get_model_states_srv::Request &req,
+    bool returnStates(last_letter_2::get_model_states_srv::Request &req,
                        last_letter_2::get_model_states_srv::Response &res)
+    {
+        res.model_states = model_states;
+        return true;
+    }
+
+    void OnUpdate()
     {
         ignition::math::Vector3d relLinVel;
         relLinVel = model->GetLink("airfoil")->RelativeLinearVel();
@@ -125,7 +132,6 @@ class model_plugin : public ModelPlugin
         ignition::math::Vector3d position;
         position = model->GetLink("airfoil")->WorldPose().Pos();
 
-        last_letter_2::model_states model_states;
         model_states.header.stamp = ros::Time::now();
         model_states.x = position[0];
         model_states.y = position[1];
@@ -139,13 +145,7 @@ class model_plugin : public ModelPlugin
         model_states.p = relAngVel[0];
         model_states.q = -relAngVel[1];
         model_states.r = -relAngVel[2];
-        res.model_states = model_states;
-
-        return true;
-    }
-
-    void OnUpdate()
-    {
+        this->state_pub.publish(model_states);
     }
 };
 // Register this plugin with the simulator
