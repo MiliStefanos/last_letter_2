@@ -31,6 +31,7 @@
   <rosparam command="load" file="$(find last_letter_2)/param/aerodynamics.yaml" />
   <rosparam command="load" file="$(find last_letter_2)/param/environment.yaml" />
   <rosparam command="load" file="$(find last_letter_2)/param/world.yaml" />
+  <rosparam command="load" file="$(find last_letter_2)/param/simulation.yaml" />
   
   <node pkg="joy" type="joy_node" name="joystick" output="screen" >
     <param name="dev" value="/dev/input/js0" />

@@ -26,7 +26,7 @@ class Environment
         double Lu,Lw,sigmau,sigmaw;
         double allowTurbulence, dt, grav0;
         Environment();
-        bool calc_airdata(last_letter_2::airdata_srv::Request& req, last_letter_2::airdata_srv::Response& res );
+        bool calcAirdata(last_letter_2::airdata_srv::Request& req, last_letter_2::airdata_srv::Response& res );
         void calcWind();
         void calcDens();
         void calcPres();
@@ -71,7 +71,7 @@ Environment::Environment()
 
 }
 
-bool Environment::calc_airdata(last_letter_2::airdata_srv::Request& req, last_letter_2::airdata_srv::Response& res )
+bool Environment::calcAirdata(last_letter_2::airdata_srv::Request& req, last_letter_2::airdata_srv::Response& res )
 {   
     states=req.states;
 
@@ -190,7 +190,7 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "environment_node");
     Environment env_object;
     ros::NodeHandle nh;
-    ros::ServiceServer envir_server=nh.advertiseService("last_letter_2/airdata", &Environment::calc_airdata, &env_object);
+    ros::ServiceServer envir_server=nh.advertiseService("last_letter_2/airdata", &Environment::calcAirdata, &env_object);
     pub = nh.advertise<last_letter_2::air_data>("last_letter_2/Environment", 1);
 
 

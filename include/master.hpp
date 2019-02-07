@@ -9,5 +9,5 @@ class Master
     Model model;
     Master();
     // ~Master();
-    void gazebo_clk_clb(const rosgraph_msgs::Clock::ConstPtr&);
+    void gazeboClockClb(const rosgraph_msgs::Clock::ConstPtr&);
 };

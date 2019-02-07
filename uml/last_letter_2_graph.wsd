@@ -74,7 +74,7 @@ namespace Ros{
         airdata
         Environment()
         ~Environment()
-        calc_airdata()
+        calcAirdata()
     }
     class Controller_mediator{
         model_states
@@ -82,8 +82,8 @@ namespace Ros{
         control_signals
         Controller(Model *)
         ' ~Controller()
-        get_controller_signals()
-        send_control_signals()
+        getControllerSignals()
+        sendControlSignals()
     }
 
     class Controller{
@@ -91,11 +91,11 @@ namespace Ros{
         control_input_signals
         control_output_signals
         Controller() 
-        get_joystick_signals()
-        get_model_states()
-        make_controller_step()
+        getJoystickSignals()
+        getModelStates()
+        makeControllerStep()
         calcOutputs()
-        publish_outputs()
+        publishOutputs()
     }
 }
 
@@ -105,19 +105,19 @@ namespace Gazebo{
     class world_plugin{
         world
         ' camera_view()
-        give_step()
+        giveStep()
     }
     
     class model_plugin{
         model_states
-        return_states()
-        apply_wrenches_on_model()
+        returnStates()
+        applyWrenchesOnModel()
     }
 
     class sensor_plugin{
         model_states
         sensor_data
-        pub_sensor_data()
+        pubSensorData()
     }
 }
 

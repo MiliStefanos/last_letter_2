@@ -22,8 +22,8 @@ class Controller
         ROS_INFO("Starting constructor");
 
         //subscribers
-        sub_joystick = nh.subscribe("last_letter_2/Joy_signals", 1, &Controller::get_joystick_signals, this);
-        sub_model_states = nh.subscribe("last_letter_2/model_states", 1, &Controller::get_model_states, this);
+        sub_joystick = nh.subscribe("last_letter_2/Joy_signals", 1, &Controller::getJoystickSignals, this);
+        sub_model_states = nh.subscribe("last_letter_2/model_states", 1, &Controller::getModelStates, this);
         // sub_sensor_data = nh.subscribe("last_letter_2/sensor_data", 1, &Controller::get_sensor_data, this);
 
         //publishers
@@ -32,7 +32,7 @@ class Controller
         ROS_INFO("Done with constructor");
     }
 
-    void get_joystick_signals(const last_letter_2::control_signals::ConstPtr &msg)
+    void getJoystickSignals(const last_letter_2::control_signals::ConstPtr &msg)
     {
         // printf("ros get joy=%li\n", clock());
         control_input_signals.delta_a = msg->delta_a;
@@ -41,7 +41,7 @@ class Controller
         control_input_signals.delta_t = msg->delta_t;
     }
 
-    void get_model_states(const last_letter_2::model_states &msg)
+    void getModelStates(const last_letter_2::model_states &msg)
     {
         //get Rotation, Linear Vel, Angular Vel
         model_states.roll = msg.roll;
@@ -54,7 +54,7 @@ class Controller
         model_states.q = msg.q;
         model_states.r = msg.r;
         // printf("roll=%f pitch=%f    yaw=%f  u=%f    v=%f    w=%f\n",roll,pitch,yaw,u,v,w);
-        make_controller_step();
+        makeControllerStep();
     }
 
     // void get_sensor_data()
@@ -62,10 +62,10 @@ class Controller
 
     // }
 
-    void make_controller_step()
+    void makeControllerStep()
     {
         calcOutputs();
-        publish_outputs();
+        publishOutputs();
     }
 
     void calcOutputs()
@@ -73,7 +73,7 @@ class Controller
         // calculate new outputs
     }
 
-    void publish_outputs()
+    void publishOutputs()
     {
         control_output_signals.delta_a = control_input_signals.delta_a;
         control_output_signals.delta_e = control_input_signals.delta_e;
