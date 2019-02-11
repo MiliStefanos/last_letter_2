@@ -1,0 +1,28 @@
+cmake_minimum_required(VERSION 3.10.2)
+
+
+project(last_letter_2_gazebo_plugins)
+
+
+find_package(catkin REQUIRED 
+  COMPONENTS
+  roscpp
+  rosgraph_msgs
+  std_srvs
+  last_letter_2_msgs
+)
+find_package(Boost REQUIRED)
+find_package(gazebo REQUIRED)
+
+catkin_package(DEPENDS
+  CATKIN_DEPENDS 
+)
+
+include_directories(include ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
+
+add_library(model_plugin src/model_plugin.cpp)
+add_library(world_plugin SHARED src/world_plugin.cpp)
+
+
+target_link_libraries(model_plugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+target_link_libraries(world_plugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})

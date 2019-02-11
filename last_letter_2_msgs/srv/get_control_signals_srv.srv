@@ -2,4 +2,4 @@
 
 std_msgs/Empty empty
 ---
-last_letter_2/control_signals signals
+last_letter_2_msgs/control_signals signals

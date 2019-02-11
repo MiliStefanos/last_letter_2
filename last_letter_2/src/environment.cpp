@@ -1,8 +1,7 @@
 #include <ros/ros.h>
-#include <last_letter_2/airdata_srv.h>
-#include <last_letter_2/air_data.h>
-#include <last_letter_2/model_states.h>
-#include <ignition/math/Vector3.hh>
+#include <last_letter_2_msgs/airdata_srv.h>
+#include <last_letter_2_msgs/air_data.h>
+#include <last_letter_2_msgs/model_states.h>
 #include <geometry_msgs/Vector3.h>
 #include <stdio.h>
 #include <iostream>
@@ -15,8 +14,8 @@ ros::Publisher pub;
 class Environment
 {
     public:
-        last_letter_2::air_data airdata;
-        last_letter_2::model_states states;
+        last_letter_2_msgs::air_data airdata;
+        last_letter_2_msgs::model_states states;
         double windDir, windRef, windRefAlt,surfSmooth, kwind;
         double T0; //Temperature at sea level, degrees K
         double P0; //Pressure at sea level, in HG
@@ -26,7 +25,7 @@ class Environment
         double Lu,Lw,sigmau,sigmaw;
         double allowTurbulence, dt, grav0;
         Environment();
-        bool calcAirdata(last_letter_2::airdata_srv::Request& req, last_letter_2::airdata_srv::Response& res );
+        bool calcAirdata(last_letter_2_msgs::airdata_srv::Request& req, last_letter_2_msgs::airdata_srv::Response& res );
         void calcWind();
         void calcDens();
         void calcPres();
@@ -71,7 +70,7 @@ Environment::Environment()
 
 }
 
-bool Environment::calcAirdata(last_letter_2::airdata_srv::Request& req, last_letter_2::airdata_srv::Response& res )
+bool Environment::calcAirdata(last_letter_2_msgs::airdata_srv::Request& req, last_letter_2_msgs::airdata_srv::Response& res )
 {   
     states=req.states;
 
@@ -191,7 +190,7 @@ int main(int argc, char **argv)
     Environment env_object;
     ros::NodeHandle nh;
     ros::ServiceServer envir_server=nh.advertiseService("last_letter_2/airdata", &Environment::calcAirdata, &env_object);
-    pub = nh.advertise<last_letter_2::air_data>("last_letter_2/Environment", 1);
+    pub = nh.advertise<last_letter_2_msgs::air_data>("last_letter_2/Environment", 1);
 
 
     while(ros::ok())

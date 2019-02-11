@@ -4,8 +4,8 @@
 #include <ignition/math/Vector3.hh>
 #include "ros/callback_queue.h"
 #include <boost/bind.hpp>
-#include <last_letter_2/apply_wrench_srv.h>
-#include <last_letter_2/model_wrenches.h>
+#include <last_letter_2_msgs/apply_wrench_srv.h>
+#include <last_letter_2_msgs/model_wrenches.h>
 #include <rosgraph_msgs/Clock.h>
 #include <ctime> // for timer
 #include <ros/service.h>
@@ -59,7 +59,7 @@ public:
         std::thread(std::bind(&stepper::QueueThread, this));
     // Connect a callback to the world update start signal.
     this->updateConnection = event::Events::ConnectWorldUpdateBegin(std::bind(&stepper::OnUpdate, this));
-    ros::AdvertiseServiceOptions so = (ros::AdvertiseServiceOptions::create<last_letter_2::apply_wrench_srv>("last_letter_2/step",
+    ros::AdvertiseServiceOptions so = (ros::AdvertiseServiceOptions::create<last_letter_2_msgs::apply_wrench_srv>("last_letter_2/step",
                                                                                                              boost::bind(&stepper::giveStep, this, _1, _2), ros::VoidPtr(), &this->rosQueue));
     this->srv_ = this->rosNode->advertiseService(so);
   }
@@ -76,8 +76,8 @@ public:
     }
   }
 
-  bool giveStep(last_letter_2::apply_wrench_srv::Request &req,
-                 last_letter_2::apply_wrench_srv::Response &res)
+  bool giveStep(last_letter_2_msgs::apply_wrench_srv::Request &req,
+                 last_letter_2_msgs::apply_wrench_srv::Response &res)
   {
     this->World->Step(1);
 

@@ -1,0 +1,5 @@
+#service for applying the wrenches to gazebo model
+
+last_letter_2_msgs/model_wrenches model_wrenches
+---
+std_msgs/Bool success

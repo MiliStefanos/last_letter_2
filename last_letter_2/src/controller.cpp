@@ -1,15 +1,15 @@
 #include <ros/ros.h>
-#include "last_letter_2/input_signals.h"
-#include <last_letter_2/model_states.h>
-#include <last_letter_2/control_signals.h>
+#include "last_letter_2_msgs/input_signals.h"
+#include <last_letter_2_msgs/model_states.h>
+#include <last_letter_2_msgs/control_signals.h>
 
 class Controller
 {
   public:
     ros::NodeHandle nh;
-    last_letter_2::control_signals control_input_signals;
-    last_letter_2::control_signals control_output_signals;
-    last_letter_2::model_states model_states;
+    last_letter_2_msgs::control_signals control_input_signals;
+    last_letter_2_msgs::control_signals control_output_signals;
+    last_letter_2_msgs::model_states model_states;
 
     ros::Publisher controller_output;
     ros::Subscriber sub_joystick;
@@ -27,12 +27,12 @@ class Controller
         // sub_sensor_data = nh.subscribe("last_letter_2/sensor_data", 1, &Controller::get_sensor_data, this);
 
         //publishers
-        controller_output = nh.advertise<last_letter_2::control_signals>("last_letter_2/controller_output_signals", 1000);
+        controller_output = nh.advertise<last_letter_2_msgs::control_signals>("last_letter_2/controller_output_signals", 1000);
 
         ROS_INFO("Done with constructor");
     }
 
-    void getJoystickSignals(const last_letter_2::control_signals::ConstPtr &msg)
+    void getJoystickSignals(const last_letter_2_msgs::control_signals::ConstPtr &msg)
     {
         // printf("ros get joy=%li\n", clock());
         control_input_signals.delta_a = msg->delta_a;
@@ -41,7 +41,7 @@ class Controller
         control_input_signals.delta_t = msg->delta_t;
     }
 
-    void getModelStates(const last_letter_2::model_states &msg)
+    void getModelStates(const last_letter_2_msgs::model_states &msg)
     {
         //get Rotation, Linear Vel, Angular Vel
         model_states.roll = msg.roll;

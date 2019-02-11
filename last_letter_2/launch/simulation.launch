@@ -1,6 +1,6 @@
 <launch>
 
-  <arg name="model" default="$(find last_letter_2)/urdf/plane.urdf.xacro"/>
+  <arg name="model" default="$(find last_letter_2)/models/aircraft/plane.urdf.xacro"/>
   <arg name="gui" default="true" />
 
   <!-- these are the arguments you can pass this launch file, for example paused:=true -->
@@ -11,7 +11,7 @@
 
   <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="world_name" value="$(find last_letter_2)/worlds/myworld.world"/>
+    <arg name="world_name" value="$(find last_letter_2)/models/worlds/myworld.world"/>
     <arg name="debug" value="$(arg debug)" />
     <arg name="gui" value="$(arg gui)" />
     <arg name="paused" value="$(arg paused)"/>
@@ -26,12 +26,12 @@
   <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"
         args="-z 1.0 -Y 2.1  -urdf -model plane -param robot_description" respawn="false" output="screen" /> 
           
-  <rosparam command="load" file="$(find last_letter_2)/param/HID.yaml" />
-  <rosparam command="load" file="$(find last_letter_2)/param/engine.yaml" />
-  <rosparam command="load" file="$(find last_letter_2)/param/aerodynamics.yaml" />
-  <rosparam command="load" file="$(find last_letter_2)/param/environment.yaml" />
-  <rosparam command="load" file="$(find last_letter_2)/param/world.yaml" />
-  <rosparam command="load" file="$(find last_letter_2)/param/simulation.yaml" />
+  <rosparam command="load" file="$(find last_letter_2)/config/param/HID.yaml" />
+  <rosparam command="load" file="$(find last_letter_2)/config/param/engine.yaml" />
+  <rosparam command="load" file="$(find last_letter_2)/config/param/aerodynamics.yaml" />
+  <rosparam command="load" file="$(find last_letter_2)/config/param/environment.yaml" />
+  <rosparam command="load" file="$(find last_letter_2)/config/param/world.yaml" />
+  <rosparam command="load" file="$(find last_letter_2)/config/param/simulation.yaml" />
   
   <node pkg="joy" type="joy_node" name="joystick" output="screen" >
     <param name="dev" value="/dev/input/js0" />

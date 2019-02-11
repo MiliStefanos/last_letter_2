@@ -2,15 +2,15 @@
 Model::Model() : aerodynamics(this), propulsion(this)
 {
     ros::service::waitForService("last_letter_2/model_states");
-    states_client = nh.serviceClient<last_letter_2::get_model_states_srv>("last_letter_2/model_states", true);
+    states_client = nh.serviceClient<last_letter_2_msgs::get_model_states_srv>("last_letter_2/model_states", true);
     ros::service::waitForService("last_letter_2/control_signals");
-    control_signals_client = nh.serviceClient<last_letter_2::get_control_signals_srv>("last_letter_2/control_signals", true);
+    control_signals_client = nh.serviceClient<last_letter_2_msgs::get_control_signals_srv>("last_letter_2/control_signals", true);
     ros::service::waitForService("last_letter_2/apply_wrench_srv");
-    apply_wrench_client = nh.serviceClient<last_letter_2::apply_wrench_srv>("last_letter_2/apply_wrench_srv", true);
+    apply_wrench_client = nh.serviceClient<last_letter_2_msgs::apply_wrench_srv>("last_letter_2/apply_wrench_srv", true);
     ros::service::waitForService("last_letter_2/step");
-    sim_step_client = nh.serviceClient<last_letter_2::apply_wrench_srv>("last_letter_2/step", true);
+    sim_step_client = nh.serviceClient<last_letter_2_msgs::apply_wrench_srv>("last_letter_2/step", true);
     ros::service::waitForService("last_letter_2/airdata");
-    airdata_client=nh.serviceClient<last_letter_2::airdata_srv>("last_letter_2/airdata",true);
+    airdata_client=nh.serviceClient<last_letter_2_msgs::airdata_srv>("last_letter_2/airdata",true);
     // signals_publisher = nh.advertise<last_letter_2::Control_signals>("last_letter_2/control_signals_feedback", 1000);
 
     ros::service::waitForService("/gazebo/pause_physics");	 	//pause gazebo to succeed synchronization with ros
