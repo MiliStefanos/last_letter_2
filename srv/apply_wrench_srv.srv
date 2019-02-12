@@ -1,5 +1,0 @@
-#service for applying the wrenches to gazebo model
-
-last_letter_2/model_wrenches model_wrenches
----
-bool success

@@ -1,13 +1,13 @@
 #include <ros/ros.h>
-#include <last_letter_2/get_control_signals_srv.h>
-#include <last_letter_2/control_signals.h>
+#include <last_letter_2_msgs/get_control_signals_srv.h>
+#include <last_letter_2_msgs/control_signals.h>
 #include <string>
 
 float delta_a = 0, delta_e = 0, delta_r = 0, delta_t = 0;
 bool contr_signals_ready = false;
 bool synch_sim_contr;
 
-void getControllerSignals(const last_letter_2::control_signals::ConstPtr &msg)
+void getControllerSignals(const last_letter_2_msgs::control_signals::ConstPtr &msg)
 {   
 
     delta_a = msg->delta_a; //store the control signals from controller
@@ -18,8 +18,8 @@ void getControllerSignals(const last_letter_2::control_signals::ConstPtr &msg)
         contr_signals_ready = true;
 }
 
-bool sendControlSignals(last_letter_2::get_control_signals_srv::Request &req,
-                        last_letter_2::get_control_signals_srv::Response &res)
+bool sendControlSignals(last_letter_2_msgs::get_control_signals_srv::Request &req,
+                        last_letter_2_msgs::get_control_signals_srv::Response &res)
 {
 
     if (synch_sim_contr)

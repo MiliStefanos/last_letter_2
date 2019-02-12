@@ -1,4 +1,4 @@
-#include <last_letter_libs.hpp>
+#include <last_letter_2_libs.hpp>
 
 
 // class Model;
@@ -19,7 +19,7 @@ class Aerodynamics
     float c_m_0, c_m_a, c_m_q, c_m_deltae;
     float airspeed, alpha, beta;
 
-    last_letter_2::aero_wrenches aero_wrenches;
+    last_letter_2_msgs::aero_wrenches aero_wrenches;
     Model *model;
     Aerodynamics(Model *);
     // ~Aerodynamics();
@@ -36,7 +36,7 @@ class Aerodynamics
    float rho = 1.2250;  // need fix. rho=model->airdata.rho
    float s_prop, c_prop, k_motor, k_omega, k_t_p;
    float airspeed;
-    last_letter_2::prop_wrenches prop_wrenches;
+    last_letter_2_msgs::prop_wrenches prop_wrenches;
     Model *model;
     Propulsion(Model *);
     // ~Propulsion();
@@ -50,10 +50,10 @@ class Aerodynamics
 class Model
 {
   public:
-    last_letter_2::model_states model_states;
-    last_letter_2::air_data airdata;
-    last_letter_2::control_signals control_signals;
-    last_letter_2::model_wrenches model_wrenches;
+    last_letter_2_msgs::model_states model_states;
+    last_letter_2_msgs::air_data airdata;
+    last_letter_2_msgs::control_signals control_signals;
+    last_letter_2_msgs::model_wrenches model_wrenches;
     
     ros::NodeHandle nh;
     ros::ServiceClient states_client;
@@ -64,10 +64,10 @@ class Model
     ros::ServiceClient pauseGazebo;
 
     ros::Publisher signals_publisher;
-    last_letter_2::get_model_states_srv states_srv;
-    last_letter_2::get_control_signals_srv signals_srv;
-    last_letter_2::airdata_srv air_data;
-    last_letter_2::apply_wrench_srv apply_wrench_srv;
+    last_letter_2_msgs::get_model_states_srv states_srv;
+    last_letter_2_msgs::get_control_signals_srv signals_srv;
+    last_letter_2_msgs::airdata_srv air_data;
+    last_letter_2_msgs::apply_wrench_srv apply_wrench_srv;
 
     Aerodynamics aerodynamics;
     Propulsion propulsion;

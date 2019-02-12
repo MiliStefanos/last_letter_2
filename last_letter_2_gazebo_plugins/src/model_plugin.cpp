@@ -6,10 +6,10 @@
 #include <gazebo/physics/physics.hh>
 #include <ignition/math/Vector3.hh>
 #include <ignition/math/Quaternion.hh>
-#include <last_letter_2/model_states.h>
-#include <last_letter_2/apply_wrench_srv.h>
-#include <last_letter_2/get_model_states_srv.h>
-#include <last_letter_2/model_wrenches.h>
+#include <last_letter_2_msgs/model_states.h>
+#include <last_letter_2_msgs/apply_wrench_srv.h>
+#include <last_letter_2_msgs/get_model_states_srv.h>
+#include <last_letter_2_msgs/model_wrenches.h>
 #include <boost/bind.hpp>
 #include <ctime> // for timer
 #include <iostream>
@@ -43,7 +43,7 @@ class model_plugin : public ModelPlugin
     ///  A thread the keeps running the rosQueue
     std::thread rosQueueThread;
 
-    last_letter_2::model_states model_states;
+    last_letter_2_msgs::model_states model_states;
   public:
     model_plugin() : ModelPlugin() //constructor
     {
@@ -65,14 +65,14 @@ class model_plugin : public ModelPlugin
             std::thread(std::bind(&model_plugin::QueueThread, this));
         //Connect a callback to the world update start signal.
         this->updateConnection = event::Events::ConnectWorldUpdateEnd(std::bind(&model_plugin::OnUpdate, this));
-        ros::AdvertiseServiceOptions so = (ros::AdvertiseServiceOptions::create<last_letter_2::apply_wrench_srv>("last_letter_2/apply_wrench_srv",
+        ros::AdvertiseServiceOptions so = (ros::AdvertiseServiceOptions::create<last_letter_2_msgs::apply_wrench_srv>("last_letter_2/apply_wrench_srv",
                                                                                                                  boost::bind(&model_plugin::applyWrenchOnModel, this, _1, _2), ros::VoidPtr(), &this->wrenches_rosQueue));
         this->apply_wrenches_server = this->rosNode->advertiseService(so);
-        so = (ros::AdvertiseServiceOptions::create<last_letter_2::get_model_states_srv>("last_letter_2/model_states",
+        so = (ros::AdvertiseServiceOptions::create<last_letter_2_msgs::get_model_states_srv>("last_letter_2/model_states",
                                                                                         boost::bind(&model_plugin::returnStates, this, _1, _2), ros::VoidPtr(), &this->states_rosQueue));
         this->returnStates_server = this->rosNode->advertiseService(so);
         // Publish code
-        this->state_pub = this->rosNode->advertise<last_letter_2::model_states>("last_letter_2/model_states", 1000);
+        this->state_pub = this->rosNode->advertise<last_letter_2_msgs::model_states>("last_letter_2/model_states", 1000);
     }
 
     //  ROS helper function that processes messages
@@ -88,8 +88,8 @@ class model_plugin : public ModelPlugin
         }
     }
 
-    bool applyWrenchOnModel(last_letter_2::apply_wrench_srv::Request &req,
-                               last_letter_2::apply_wrench_srv::Response &res)
+    bool applyWrenchOnModel(last_letter_2_msgs::apply_wrench_srv::Request &req,
+                               last_letter_2_msgs::apply_wrench_srv::Response &res)
     {
         ignition::math::Vector3d force, torque;
         float thrust;
@@ -114,8 +114,8 @@ class model_plugin : public ModelPlugin
         return true;
     }
 
-    bool returnStates(last_letter_2::get_model_states_srv::Request &req,
-                       last_letter_2::get_model_states_srv::Response &res)
+    bool returnStates(last_letter_2_msgs::get_model_states_srv::Request &req,
+                       last_letter_2_msgs::get_model_states_srv::Response &res)
     {
         res.model_states = model_states;
         return true;
