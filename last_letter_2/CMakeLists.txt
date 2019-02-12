@@ -26,6 +26,12 @@ add_executable(controller_mediator src/controller_mediator.cpp)
 add_executable(environment src/environment.cpp)
 add_executable(controller src/controller.cpp)
 
+add_dependencies(joy2chan ${catkin_EXPORTED_TARGETS})
+add_dependencies(environment ${catkin_EXPORTED_TARGETS})
+add_dependencies(chan2basics ${catkin_EXPORTED_TARGETS})
+add_dependencies(core ${catkin_EXPORTED_TARGETS})
+add_dependencies(controller_mediator ${catkin_EXPORTED_TARGETS})
+add_dependencies(controller ${catkin_EXPORTED_TARGETS})
 
 target_link_libraries(joy2chan ${catkin_LIBRARIES})
 target_link_libraries(chan2basics ${catkin_LIBRARIES})

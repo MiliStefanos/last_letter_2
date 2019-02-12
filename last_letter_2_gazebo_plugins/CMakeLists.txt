@@ -1,6 +1,4 @@
 cmake_minimum_required(VERSION 3.10.2)
-
-
 project(last_letter_2_gazebo_plugins)
 
 
@@ -21,7 +19,10 @@ catkin_package(DEPENDS
 include_directories(include ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
 
 add_library(model_plugin src/model_plugin.cpp)
-add_library(world_plugin SHARED src/world_plugin.cpp)
+add_library(world_plugin src/world_plugin.cpp)
+
+add_dependencies(model_plugin ${catkin_EXPORTED_TARGETS})
+add_dependencies(world_plugin ${catkin_EXPORTED_TARGETS})
 
 
 target_link_libraries(model_plugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
