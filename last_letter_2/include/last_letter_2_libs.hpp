@@ -19,5 +19,6 @@
 
 class Aerodynamics;
 class Propulsion;
+class Dynamics;
 class Model;
 class Master;

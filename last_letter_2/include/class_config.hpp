@@ -1,7 +1,16 @@
 #include <last_letter_2_libs.hpp>
 
 
-// class Model;
+class Dynamics
+{
+  public:
+  Model * model;
+  Aerodynamics *aerodynamics;
+  Propulsion * propulsion;
+  Dynamics(Model *);
+  void calcAero();
+  void calcProp();
+};
 
 class Aerodynamics 
 {
@@ -26,8 +35,24 @@ class Aerodynamics
     void initParam();
     void calcWrench();
     void calcAdditionalData();
+    virtual void calcForces()=0;
+    virtual void calcTorques()=0;
+};
+
+class NoAerodynamics : public Aerodynamics
+{
+  public:
+    NoAerodynamics(Model *);
     void calcForces();
     void calcTorques();
+};
+
+class StdLinearAero : public Aerodynamics
+{
+  public:
+  StdLinearAero(Model *);
+  void calcForces();
+  void calcTorques();
 };
 
  class Propulsion
@@ -43,8 +68,16 @@ class Aerodynamics
     void initParam();
     void calcWrench();
     void calcAdditionalData();
-    void calcThrust();
-    void calcTorque();
+    virtual void calcThrust()=0;
+    virtual void calcTorque()=0;
+ };
+
+ class BeardEngine : public Propulsion
+ {
+   public:
+   BeardEngine(Model *);
+   void calcThrust();
+   void calcTorque();
  };
 
 class Model
@@ -69,8 +102,7 @@ class Model
     last_letter_2_msgs::airdata_srv air_data;
     last_letter_2_msgs::apply_wrench_srv apply_wrench_srv;
 
-    Aerodynamics aerodynamics;
-    Propulsion propulsion;
+    Dynamics dynamics;
     // Airdata airdata;
     Model();
     void modelStep();
@@ -93,3 +125,5 @@ class Master
     // ~Master();
     void gazeboClockClb(const rosgraph_msgs::Clock::ConstPtr&);
 };
+
+

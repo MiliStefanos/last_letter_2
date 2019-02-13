@@ -1,6 +1,7 @@
 #include <class_config.hpp>
 #include "model.cpp"
 #include "master.cpp"
+#include "dynamics.cpp"
 #include "aerodynamics.cpp"
 #include "propulsion.cpp"
 

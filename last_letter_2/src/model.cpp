@@ -1,5 +1,5 @@
 
-Model::Model() : aerodynamics(this), propulsion(this)
+Model::Model() : dynamics(this)
 {
     ros::service::waitForService("last_letter_2/model_states");
     states_client = nh.serviceClient<last_letter_2_msgs::get_model_states_srv>("last_letter_2/model_states", true);
@@ -126,21 +126,19 @@ void Model::getAirdata()
 
 void Model::calcWrenches()
 {
-    aerodynamics.calcWrench();
-    propulsion.calcWrench();
-
-
+    dynamics.calcAero();
+    dynamics.calcProp();
 }
 
 void Model::applyWrenches()
 {
-    model_wrenches.thrust = propulsion.prop_wrenches.thrust; // y,z values with opposite sign
-    model_wrenches.forces[0] = aerodynamics.aero_wrenches.drag;
-    model_wrenches.forces[1] = -aerodynamics.aero_wrenches.fy;
-    model_wrenches.forces[2] = -aerodynamics.aero_wrenches.lift;
-    model_wrenches.torques[0] = aerodynamics.aero_wrenches.l + propulsion.prop_wrenches.torque;
-    model_wrenches.torques[1] = -aerodynamics.aero_wrenches.m;
-    model_wrenches.torques[2] = -aerodynamics.aero_wrenches.n;
+    model_wrenches.thrust = dynamics.propulsion->prop_wrenches.thrust; // y,z values with opposite sign
+    model_wrenches.forces[0] = dynamics.aerodynamics->aero_wrenches.drag;
+    model_wrenches.forces[1] = -dynamics.aerodynamics->aero_wrenches.fy;
+    model_wrenches.forces[2] = -dynamics.aerodynamics->aero_wrenches.lift;
+    model_wrenches.torques[0] = dynamics.aerodynamics->aero_wrenches.l + dynamics.propulsion->prop_wrenches.torque;
+    model_wrenches.torques[1] = -dynamics.aerodynamics->aero_wrenches.m;
+    model_wrenches.torques[2] = -dynamics.aerodynamics->aero_wrenches.n;
 
     // prepare service to call - - - - - - - - - -
     apply_wrench_srv.request.model_wrenches = model_wrenches;

@@ -39,7 +39,29 @@ void Aerodynamics::calcAdditionalData()
     }
 }
 
-void Aerodynamics::calcForces()
+
+// Class NoAero contructor
+NoAerodynamics::NoAerodynamics(Model *parent) : Aerodynamics(parent)
+{   
+    printf("no aerodynamics built\n");
+}
+
+void NoAerodynamics::calcForces()
+{
+
+}
+
+void NoAerodynamics::calcTorques()
+{
+
+}
+
+StdLinearAero::StdLinearAero(Model *parent) : Aerodynamics(parent)
+{
+    printf("stdLinearAero built\n");
+}
+
+void StdLinearAero::calcForces()
 {
     float qbar = 0.5 * rho * pow(airspeed, 2) * s;
     float sigmoid = (1 + exp(-M * (alpha - a0)) + exp(M * (alpha + a0))) / (1 + exp(-M * (alpha - a0))) / (1 + exp(M * (alpha + a0)));
@@ -78,7 +100,7 @@ void Aerodynamics::calcForces()
     }
 }
 
-void Aerodynamics::calcTorques()
+void StdLinearAero::calcTorques()
 {
     float qbar = 0.5 * rho * pow(airspeed, 2) * s;
 
