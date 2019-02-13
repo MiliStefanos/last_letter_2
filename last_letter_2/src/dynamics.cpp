@@ -2,10 +2,9 @@ Dynamics::Dynamics(Model *parent)
 {
     printf("dynamic constuctor \n");
     model=parent;
-    aerodynamics=new StdLinearAero(model);
-    // aerodynamics=factory.buildNoAerodynamics(model);
-    propulsion = new BeardEngine(model);
-    // propulsion=factory.buildPropulsion();
+    Factory factory;
+    aerodynamics=factory.buildAerodynamics(model);
+    propulsion = factory.buildPropulsion(model);
 }
 
 void Dynamics::calcAero()

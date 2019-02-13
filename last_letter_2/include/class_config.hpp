@@ -80,6 +80,14 @@ class StdLinearAero : public Aerodynamics
    void calcTorque();
  };
 
+class NoEngine : public Propulsion
+ {
+   public:
+   NoEngine(Model *);
+   void calcThrust();
+   void calcTorque();
+ };
+
 class Model
 {
   public:
@@ -126,4 +134,9 @@ class Master
     void gazeboClockClb(const rosgraph_msgs::Clock::ConstPtr&);
 };
 
-
+class Factory
+{
+    public:
+    Aerodynamics * buildAerodynamics(Model *);
+    Propulsion * buildPropulsion(Model *);
+};

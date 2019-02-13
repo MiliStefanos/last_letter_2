@@ -1,5 +1,7 @@
-#motor Engine Parameters
+#type 0 = No engine, 1= beardEngine
+motor1/motorType: 0
 
+#motor Engine Parameters
 motor1/s_prop: 0.2027
 motor1/k_motor: 80
 motor1/k_t_p: 0.0

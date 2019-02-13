@@ -1,6 +1,5 @@
 #include <ros/ros.h>
 #include <string>
-// #include <class_config.hpp>
 #include <rosgraph_msgs/Clock.h>
 #include <last_letter_2_msgs/get_model_states_srv.h>
 #include <last_letter_2_msgs/get_control_signals_srv.h>
