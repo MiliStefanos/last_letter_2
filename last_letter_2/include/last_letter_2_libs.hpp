@@ -21,3 +21,4 @@ class Propulsion;
 class Dynamics;
 class Model;
 class Master;
+class Factory;

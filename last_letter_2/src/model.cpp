@@ -13,7 +13,7 @@ Model::Model() : dynamics(this)
     airdata_client=nh.serviceClient<last_letter_2_msgs::airdata_srv>("last_letter_2/airdata",true);
     // signals_publisher = nh.advertise<last_letter_2::Control_signals>("last_letter_2/control_signals_feedback", 1000);
 
-    ros::service::waitForService("/gazebo/pause_physics");	 	//pause gazebo to succeed synchronization with ros
+    ros::service::waitForService("/gazebo/pause_physics");      //pause gazebo to succeed synchronization with ros
     pauseGazebo = nh.serviceClient<std_srvs::Empty>("/gazebo/pause_physics");
     std_srvs::Empty emptySrv;
     pauseGazebo.call(emptySrv);
@@ -43,7 +43,7 @@ void Model::getStates()
         else
         {
             ROS_ERROR("Failed to call service get_model_states_srv\n");
-            //			break;
+            //break;
         }
     }
     else

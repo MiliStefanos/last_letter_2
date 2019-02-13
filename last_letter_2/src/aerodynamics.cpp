@@ -2,7 +2,6 @@
 Aerodynamics::Aerodynamics(Model *parent)
 {
     model = parent;
-    initParam();
 }
 
 void Aerodynamics::calcWrench()
@@ -58,6 +57,7 @@ void NoAerodynamics::calcTorques()
 
 StdLinearAero::StdLinearAero(Model *parent) : Aerodynamics(parent)
 {
+    initParam();
     printf("stdLinearAero built\n");
 }
 
@@ -129,7 +129,7 @@ void StdLinearAero::calcTorques()
     }
 }
 
-void Aerodynamics::initParam()
+void StdLinearAero::initParam()
 {
     int id = 1;
     char paramMsg[50];

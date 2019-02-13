@@ -1,4 +1,4 @@
-#include <class_config.hpp>
+#include <master.hpp>
 #include "model.cpp"
 #include "master.cpp"
 #include "dynamics.cpp"

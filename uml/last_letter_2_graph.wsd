@@ -70,6 +70,19 @@ namespace Ros{
         calcTorque()
     }
 
+    class Dynamics{
+        *model
+        *aerodynamics
+        * propulsion
+        Dynamics(Model *)
+        calcAero()
+        calcProp()
+    }
+
+    class Factory{
+        buildAerodynamics();
+        buildPropulsion();
+    }
     class Environment{
         airdata
         Environment()
@@ -124,9 +137,10 @@ namespace Gazebo{
 
 Ros.Master --> Ros.Model
 Ros.Controller_mediator --> Ros.Model : control_signals_flag (topic)
-Ros.Propulsion --> Ros.Model
+Ros.Propulsion --> Ros.Dynamics
+Ros.Dynamics --> Ros.Model
 Ros.Environment <-> Ros.Model : pose -airdata (srv)
-Ros.Aerodynamics --> Ros.Model
+Ros.Aerodynamics --> Ros.Dynamics
 Gazebo.model_plugin <-- Ros.Model : wrenches    (srv)
 Ros.Model <- Gazebo.model_plugin : model_states (srv)
 Ros.Controller <- Gazebo.sensor_plugin :sensor_data (topic)
@@ -138,4 +152,6 @@ Ros.Controller <- Gazebo.model_plugin :model_states (topic)
 Gazebo.world_plugin .. Gazebo.model_plugin
 Gazebo.model_plugin .. Gazebo.sensor_plugin
 Ros.Joystick -> Ros.Controller
+Ros.Factory <-> Ros.Propulsion
+Ros.Aerodynamics <-> Ros.Factory
 @enduml

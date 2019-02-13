@@ -1,5 +1,5 @@
 #type 0 = No engine, 1= beardEngine
-motor1/motorType: 0
+motor1/motorType: 1
 
 #motor Engine Parameters
 motor1/s_prop: 0.2027
