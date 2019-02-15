@@ -92,7 +92,7 @@ class model_plugin : public ModelPlugin
                                last_letter_2_msgs::apply_wrench_srv::Response &res)
     {
         ignition::math::Vector3d force, torque;
-        float thrust;
+        double thrust;
 
         thrust = req.model_wrenches.thrust;
         force[0] = thrust;
