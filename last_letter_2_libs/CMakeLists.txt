@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10.2)
-project(last_letter_2_maths)
+project(last_letter_2_libs)
 
 
 find_package(catkin REQUIRED 
@@ -17,6 +17,6 @@ catkin_package(DEPENDS
 
 include_directories(include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
 
-add_library(math src/mathlib.cpp)
+add_library(math src/math_lib.cpp)
 
 target_link_libraries(math ${catkin_LIBRARIES})

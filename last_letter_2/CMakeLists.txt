@@ -9,7 +9,7 @@ find_package(catkin REQUIRED
   sensor_msgs
   std_msgs
   last_letter_2_msgs
-  last_letter_2_maths
+  last_letter_2_libs
 )
 find_package(Boost REQUIRED)
 
