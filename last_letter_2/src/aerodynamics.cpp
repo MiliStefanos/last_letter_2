@@ -1,4 +1,7 @@
 
+
+
+
 Aerodynamics::Aerodynamics(Model *parent)
 {
     model = parent;
@@ -15,9 +18,9 @@ void Aerodynamics::calcAdditionalData()
 {
 
     // airspeed, alpha, beta
-    float u_r = model->model_states.u - model->airdata.wind_x;
-    float v_r = model->model_states.v - model->airdata.wind_y;
-    float w_r = model->model_states.w - model->airdata.wind_z;
+    double u_r = model->model_states.u - model->airdata.wind_x;
+    double v_r = model->model_states.v - model->airdata.wind_y;
+    double w_r = model->model_states.w - model->airdata.wind_z;
     airspeed = sqrt(pow(u_r, 2) + pow(v_r, 2) + pow(w_r, 2));
     alpha = atan2(w_r, u_r);
     beta;
@@ -37,7 +40,6 @@ void Aerodynamics::calcAdditionalData()
         beta = atan2(v_r, u_r);
     }
 }
-
 
 // Class NoAero contructor
 NoAerodynamics::NoAerodynamics(Model *parent) : Aerodynamics(parent)
@@ -63,27 +65,21 @@ StdLinearAero::StdLinearAero(Model *parent) : Aerodynamics(parent)
 
 void StdLinearAero::calcForces()
 {
-    float qbar = 0.5 * rho * pow(airspeed, 2) * s;
-    float sigmoid = (1 + exp(-M * (alpha - a0)) + exp(M * (alpha + a0))) / (1 + exp(-M * (alpha - a0))) / (1 + exp(M * (alpha + a0)));
-    if (isnan(sigmoid))
-        sigmoid = 0;
-    float linear = (1.0 - sigmoid) * (c_lift_0 + c_lift_a * alpha);                         //Lift at small AoA
-    float flatPlate = sigmoid * (2 * copysign(1, alpha) * pow(sin(alpha), 2) * cos(alpha)); //Lift beyond stall
-    float c_lift_alpha = linear + flatPlate;
+    double qbar = 0.5 * rho * pow(airspeed, 2) * s;
 
-    float AR = pow(b, 2) / s;
-    float c_drag_alpha = c_drag_p + pow(c_lift_0 + c_lift_a * alpha, 2) / (M_PI * oswald * AR);
+    double c_lift_alpha = liftCoeff(alpha);
+    double c_drag_alpha = dragCoeff(alpha);
 
-    float ca = cos(alpha);
-    float sa = sin(alpha);
+    double ca = cos(alpha);
+    double sa = sin(alpha);
 
-    float p = model->model_states.p;
-    float q = model->model_states.q;
-    float r = model->model_states.r;
-    float delta_a = model->control_signals.delta_a;
-    float delta_e = model->control_signals.delta_e;
-    float delta_r = model->control_signals.delta_r;
-    float delta_t = model->control_signals.delta_t;
+    double p = model->model_states.p;
+    double q = model->model_states.q;
+    double r = model->model_states.r;
+    double delta_a = model->control_signals.delta_a;
+    double delta_e = model->control_signals.delta_e;
+    double delta_r = model->control_signals.delta_r;
+    double delta_t = model->control_signals.delta_t;
 
     // force calculation - - - - - - - - - - -expressed to body frame
     if (airspeed == 0)
@@ -102,18 +98,18 @@ void StdLinearAero::calcForces()
 
 void StdLinearAero::calcTorques()
 {
-    float qbar = 0.5 * rho * pow(airspeed, 2) * s;
+    double qbar = 0.5 * rho * pow(airspeed, 2) * s;
 
-    float ca = cos(alpha);
-    float sa = sin(alpha);
+    double ca = cos(alpha);
+    double sa = sin(alpha);
 
-    float p = model->model_states.p;
-    float q = model->model_states.q;
-    float r = model->model_states.r;
-    float delta_a = model->control_signals.delta_a;
-    float delta_e = model->control_signals.delta_e;
-    float delta_r = model->control_signals.delta_r;
-    float delta_t = model->control_signals.delta_t;
+    double p = model->model_states.p;
+    double q = model->model_states.q;
+    double r = model->model_states.r;
+    double delta_a = model->control_signals.delta_a;
+    double delta_e = model->control_signals.delta_e;
+    double delta_r = model->control_signals.delta_r;
+    double delta_t = model->control_signals.delta_t;
 
     if (airspeed == 0)
     {
@@ -127,6 +123,51 @@ void StdLinearAero::calcTorques()
         aero_wrenches.m = qbar * (c * (c_m_0 + c_m_a * alpha + c_m_q * c / 2 / airspeed * q + c_m_deltae * delta_e));
         aero_wrenches.n = qbar * (b * (c_n_0 + c_n_b * beta + c_n_p * b / 2 / airspeed * p + c_n_r * b / 2 / airspeed * r + c_n_deltaa * delta_a + c_n_deltar * delta_r));
     }
+}
+
+double StdLinearAero::liftCoeff(double alpha)
+{
+    double sigmoid = (1 + exp(-M * (alpha - a0)) + exp(M * (alpha + a0))) / (1 + exp(-M * (alpha - a0))) / (1 + exp(M * (alpha + a0)));
+    if (isnan(sigmoid))
+        sigmoid = 0;
+    double linear = (1.0 - sigmoid) * (c_lift_0 + c_lift_a * alpha);                         //Lift at small AoA
+    double flatPlate = sigmoid * (2 * copysign(1, alpha) * pow(sin(alpha), 2) * cos(alpha)); //Lift beyond stall
+    return linear + flatPlate;
+}
+
+double StdLinearAero::dragCoeff(double alpha)
+{
+    double AR = pow(b, 2) / s;
+    double c_drag_alpha = c_drag_p + pow(c_lift_0 + c_lift_a * alpha, 2) / (M_PI * oswald * AR);
+    return c_drag_alpha;
+}
+
+// Class constructor
+HCUAVAero::HCUAVAero (Model * parent) : StdLinearAero(parent)
+{
+	int id = 1;
+	char s[100];
+	Factory factory;
+	// Create CLift polynomial
+	sprintf(s,"airfoil%i/cLiftPoly",id);
+	liftCoeffPoly =  factory.buildPolynomial(s);
+	// Create CDrag polynomial
+	sprintf(s,"airfoil%i/cDragPoly",id);
+	dragCoeffPoly =  factory.buildPolynomial(s);
+}
+
+//////////////////////////
+//C_lift_alpha calculation
+double HCUAVAero::liftCoeff (double alpha)
+{
+	return liftCoeffPoly->evaluate(alpha);
+}
+
+//////////////////////////
+//C_drag_alpha calculation
+double HCUAVAero::dragCoeff (double alpha)
+{
+	return dragCoeffPoly->evaluate(alpha);
 }
 
 void StdLinearAero::initParam()

@@ -3,7 +3,7 @@
 #include <last_letter_2_msgs/control_signals.h>
 #include <string>
 
-float delta_a = 0, delta_e = 0, delta_r = 0, delta_t = 0;
+double delta_a = 0, delta_e = 0, delta_r = 0, delta_t = 0;
 bool contr_signals_ready = false;
 bool synch_sim_contr;
 

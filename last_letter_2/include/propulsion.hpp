@@ -1,8 +1,8 @@
 class Propulsion
  {
    public:
-   float rho = 1.2250;  // need fix. rho=model->airdata.rho
-   float airspeed;
+   double rho = 1.2250;  // need fix. rho=model->airdata.rho
+   double airspeed;
     last_letter_2_msgs::prop_wrenches prop_wrenches;
     Model *model;
     Propulsion(Model *);
@@ -16,7 +16,7 @@ class Propulsion
  class BeardEngine : public Propulsion
  {
    public:
-   float s_prop, c_prop, k_motor, k_omega, k_t_p;
+   double s_prop, c_prop, k_motor, k_omega, k_t_p;
    BeardEngine(Model *);
    void initParam();
    void calcThrust();
