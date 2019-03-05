@@ -52,6 +52,7 @@
   <node pkg="robot_state_publisher" name="robot_state_publisher" type="robot_state_publisher">
     <remap from="robot_description" to="robot_description"/>
     <remap from="joint_states" to="last_letter_2/joint_states"/>
+    <param name="ignore_timestamp" value="true"/>
   </node>
 </launch>
     
