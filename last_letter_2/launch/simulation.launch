@@ -9,7 +9,7 @@
   <arg name="headless" default="false"/>
   <arg name="debug" default="false"/>
 
-  <arg name="uav_name" default="skywalker_2013"/>
+  <arg name="uav_name" default="csl_2k19"/>
 
 
   <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
