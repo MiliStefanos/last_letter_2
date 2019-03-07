@@ -30,6 +30,7 @@
     void getStates();
     void getControlSignals();
     void getAirdata();
+    void calcAdditionalData();
     void calcWrenches();
     void applyWrenches();
     void simulationStep();

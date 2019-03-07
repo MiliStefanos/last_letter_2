@@ -160,14 +160,11 @@ void Model::calcWrenches()
 {
     dynamics.calcAero();
     dynamics.calcProp();
-    printf("----------thrust=%f\n",model_wrenches.thrust);
-
 }
 
 void Model::applyWrenches()
 {
     model_wrenches.thrust = dynamics.propulsion->prop_wrenches.thrust; // y,z values with opposite sign
-    printf("----------thrust=%f\n",model_wrenches.thrust);
     model_wrenches.forces[0] = dynamics.aerodynamics->aero_wrenches.drag;
     model_wrenches.forces[1] = -dynamics.aerodynamics->aero_wrenches.fy;
     model_wrenches.forces[2] = -dynamics.aerodynamics->aero_wrenches.lift;
