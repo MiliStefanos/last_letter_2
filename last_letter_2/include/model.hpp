@@ -6,6 +6,8 @@
     last_letter_2_msgs::air_data airdata;
     last_letter_2_msgs::control_signals control_signals;
     last_letter_2_msgs::model_wrenches model_wrenches;
+    double airspeed,alpha,beta;
+    double u_r, v_r, w_r;   //relative body wind
     
     ros::NodeHandle nh;
     ros::ServiceClient states_client;

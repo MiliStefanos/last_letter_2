@@ -122,17 +122,52 @@ void Model::getAirdata()
         airdata_client.waitForExistence();
         //		    connectToClient(); //Why this??
     }
+    airdata.wind_x=air_data.response.airdata.wind_x;
+    airdata.wind_y=air_data.response.airdata.wind_y;
+    airdata.wind_z=air_data.response.airdata.wind_z;
+    airdata.density=air_data.response.airdata.density;
+    airdata.temperature=air_data.response.airdata.temperature;
+}
+
+void Model::calcAdditionalData()
+{
+
+    // airspeed, alpha, beta
+    u_r = model_states.u - airdata.wind_x;
+    v_r = model_states.v - airdata.wind_y;
+    w_r = model_states.w - airdata.wind_z;
+    airspeed = sqrt(pow(u_r, 2) + pow(v_r, 2) + pow(w_r, 2));
+    alpha = atan2(w_r, u_r);
+    beta;
+    if (u_r == 0)
+    {
+        if (v_r == 0)
+        {
+            beta = 0;
+        }
+        else
+        {
+            beta = asin(v_r / abs(v_r));
+        }
+    }
+    else
+    {
+        beta = atan2(v_r, u_r);
+    }
 }
 
 void Model::calcWrenches()
 {
     dynamics.calcAero();
     dynamics.calcProp();
+    printf("----------thrust=%f\n",model_wrenches.thrust);
+
 }
 
 void Model::applyWrenches()
 {
     model_wrenches.thrust = dynamics.propulsion->prop_wrenches.thrust; // y,z values with opposite sign
+    printf("----------thrust=%f\n",model_wrenches.thrust);
     model_wrenches.forces[0] = dynamics.aerodynamics->aero_wrenches.drag;
     model_wrenches.forces[1] = -dynamics.aerodynamics->aero_wrenches.fy;
     model_wrenches.forces[2] = -dynamics.aerodynamics->aero_wrenches.lift;

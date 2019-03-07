@@ -10,8 +10,10 @@
 #include <last_letter_2_msgs/aero_wrenches.h>
 #include <last_letter_2_msgs/prop_wrenches.h>
 #include <geometry_msgs/Point.h>
+#include <geometry_msgs/Vector3.h>
 #include <last_letter_2_msgs/model_wrenches.h>
 #include <last_letter_2_msgs/apply_wrench_srv.h>
+#include <tf/transform_broadcaster.h>
 #include <std_srvs/Empty.h>
 #include <math.h>
 #include <ctime>
