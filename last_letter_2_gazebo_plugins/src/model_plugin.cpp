@@ -5,14 +5,18 @@
 #include <gazebo/gazebo_client.hh> //gazebo version >6
 #include <gazebo/physics/physics.hh>
 #include <ignition/math/Vector3.hh>
-#include <ignition/math/Quaternion.hh>
 #include <last_letter_2_msgs/model_states.h>
 #include <last_letter_2_msgs/apply_wrench_srv.h>
 #include <last_letter_2_msgs/get_model_states_srv.h>
 #include <last_letter_2_msgs/model_wrenches.h>
+#include <geometry_msgs/Vector3Stamped.h>
+#include <tf2_ros/transform_listener.h>
+#include <tf2/convert.h>
+#include <kdl_parser/kdl_parser.hpp>
 #include <boost/bind.hpp>
 #include <ctime> // for timer
 #include <iostream>
+
 
 namespace gazebo
 {
@@ -44,6 +48,11 @@ class model_plugin : public ModelPlugin
     std::thread rosQueueThread;
 
     last_letter_2_msgs::model_states model_states;
+
+    tf2_ros::Buffer tfBuffer;
+    geometry_msgs::Vector3Stamped world_vel;
+    geometry_msgs::Vector3Stamped body_vel;
+    tf2::Quaternion myQuaternion;
 
   public:
     model_plugin() : ModelPlugin() //constructor
@@ -78,31 +87,48 @@ class model_plugin : public ModelPlugin
         modelStateInit();
     }
 
-    void modelStateInit(){
-         XmlRpc::XmlRpcValue list;
-        if (!ros::param::getCached("init/position", list))
-        {  ROS_FATAL("Invalid parameters for init/position in param server!"); ros::shutdown(); }
-        ROS_ASSERT(list[0].getType() == XmlRpc::XmlRpcValue::TypeDouble);
+    void modelStateInit()
+    {
+        //Get initial states from parameter server
+        XmlRpc::XmlRpcValue list;
+
+        if (!ros::param::getCached("init/position", list)) { ROS_FATAL("Invalid parameters for init/position in param server!"); ros::shutdown(); }
         ignition::math::Vector3d xyz_pose(list[0], list[1], list[2]);
-
-        if (!ros::param::getCached("init/orientation", list))
-        {  ROS_FATAL("Invalid parameters for init/orientation in param server!"); ros::shutdown(); }
+        ROS_ASSERT(list[0].getType() == XmlRpc::XmlRpcValue::TypeDouble);
+        if (!ros::param::getCached("init/orientation", list)) { ROS_FATAL("Invalid parameters for init/orientation in param server!"); ros::shutdown(); }
         ignition::math::Vector3d rpy_pose(list[0], list[1], list[2]);
-
-        if (!ros::param::getCached("init/velLin", list))
-        {  ROS_FATAL("Invalid parameters for init/velLin in param server!"); ros::shutdown(); }
+        if (!ros::param::getCached("init/velLin", list)) { ROS_FATAL("Invalid parameters for init/velLin in param server!"); ros::shutdown(); }
         ignition::math::Vector3d velLin(list[0], list[1], list[2]);
-
-        if (!ros::param::getCached("init/velAng", list))
-        {  ROS_FATAL("Invalid parameters for init/velAng in param server!"); ros::shutdown(); }
+        if (!ros::param::getCached("init/velAng", list)) { ROS_FATAL("Invalid parameters for init/velAng in param server!"); ros::shutdown(); }
         ignition::math::Vector3d velAng(list[0], list[1], list[2]);
 
+        //Set the initial position and rotation 
         ignition::math::Pose3d init_pose;
         init_pose.Set(xyz_pose, rpy_pose);
         this->model->SetWorldPose(init_pose);
-        this->model->GetLink("airfoil")->SetLinearVel(velLin);    //NWU frame, keep yaw and pitch at zero 
-        this->model->GetLink("airfoil")->SetAngularVel(velAng);   //NWU frame
+
+        // Tranform linear and angular velocity from body frame to world frame        
+        KDL::Frame tranformation_matrix;
+        tf2::Stamped<KDL::Vector> v_out;
+
+        tranformation_matrix = KDL::Frame(KDL::Rotation::EulerZYX(-rpy_pose[2], -rpy_pose[1], rpy_pose[0]), KDL::Vector(0, 0, 0));
+        v_out = tf2::Stamped<KDL::Vector>(tranformation_matrix.Inverse() * KDL::Vector(velLin[0], velLin[1], velLin[2]), ros::Time::now(), "airfoil");
+        
+        velLin[0] = v_out[0];
+        velLin[1] = v_out[1];
+        velLin[2] = v_out[2];
+
+        v_out = tf2::Stamped<KDL::Vector>(tranformation_matrix.Inverse() * KDL::Vector(velAng[0], velAng[1], velAng[2]), ros::Time::now(), "airfoil");
+
+        velAng[0] = v_out[0];
+        velAng[1] = v_out[1];
+        velAng[2] = v_out[2];
+
+        // Set velocities on model
+        this->model->SetLinearVel(velLin);  //NWU frame, keep yaw and pitch at zero
+        this->model->SetAngularVel(velAng); //NWU frame
     }
+
     //  ROS helper function that processes messages
     void QueueThread()
     {
