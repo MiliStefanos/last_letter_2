@@ -25,17 +25,19 @@
   <param name="robot_description" command="$(find xacro)/xacro '$(arg model)'"/>
   <param name="use_gui" value="$(arg gui)"/>
 
-  <!-- push robot_description to factory and spawn robot in gazebo -->
-  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"
-        args="-z 1.0 -Y 2.1  -urdf -model plane -param robot_description" respawn="false" output="screen" /> 
-          
   <rosparam command="load" file="$(find last_letter_2)/config/param/HID.yaml" />
   <rosparam command="load" file="$(find last_letter_2)/config/param/aircrafts/$(arg uav_name)/aerodynamics.yaml" />
   <rosparam command="load" file="$(find last_letter_2)/config/param/aircrafts/$(arg uav_name)/propulsion.yaml" />
   <rosparam command="load" file="$(find last_letter_2)/config/param/aircrafts/$(arg uav_name)/rigidBody.yaml" />
+  <rosparam command="load" file="$(find last_letter_2)/config/param/aircrafts/$(arg uav_name)/init.yaml" />
   <rosparam command="load" file="$(find last_letter_2)/config/param/environment.yaml" />
   <rosparam command="load" file="$(find last_letter_2)/config/param/world.yaml" />
   <rosparam command="load" file="$(find last_letter_2)/config/param/simulation.yaml" />
+
+   <!-- push robot_description to factory and spawn robot in gazebo -->
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"
+        args="-z 1 -urdf -model plane -param robot_description" respawn="false" output="screen" >
+  </node> 
   
   <node pkg="joy" type="joy_node" name="joystick" output="screen" >
     <param name="dev" value="/dev/input/js0" />
@@ -48,6 +50,11 @@
   <node pkg="last_letter_2" name="environment" type="environment" output="screen" />
   <node pkg="last_letter_2" name="controller" type="controller" output="screen" />
     
+  <node pkg="robot_state_publisher" name="robot_state_publisher" type="robot_state_publisher">
+    <remap from="robot_description" to="robot_description"/>
+    <remap from="joint_states" to="last_letter_2/joint_states"/>
+    <param name="ignore_timestamp" value="true"/>
+  </node>
 </launch>
     
     
