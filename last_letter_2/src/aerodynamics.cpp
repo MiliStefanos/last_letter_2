@@ -16,29 +16,10 @@ void Aerodynamics::calcWrench()
 
 void Aerodynamics::calcAdditionalData()
 {
-
     // airspeed, alpha, beta
-    double u_r = model->model_states.u - model->airdata.wind_x;
-    double v_r = model->model_states.v - model->airdata.wind_y;
-    double w_r = model->model_states.w - model->airdata.wind_z;
-    airspeed = sqrt(pow(u_r, 2) + pow(v_r, 2) + pow(w_r, 2));
-    alpha = atan2(w_r, u_r);
-    beta;
-    if (u_r == 0)
-    {
-        if (v_r == 0)
-        {
-            beta = 0;
-        }
-        else
-        {
-            beta = asin(v_r / abs(v_r));
-        }
-    }
-    else
-    {
-        beta = atan2(v_r, u_r);
-    }
+    airspeed= model->airspeed;
+    alpha=model->alpha;
+    beta=model->beta;
 }
 
 // Class NoAero contructor

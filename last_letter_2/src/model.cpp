@@ -24,6 +24,7 @@ void Model::modelStep()
     getStates();
     getControlSignals();   // need to create control_singlas_server
     getAirdata();
+    calcAdditionalData();
     calcWrenches();
     applyWrenches();
     simulationStep();
@@ -97,8 +98,6 @@ void Model::getControlSignals()
     control_signals.delta_r=signals_srv.response.signals.delta_r;
     control_signals.delta_t=signals_srv.response.signals.delta_t;
     control_signals.header.stamp=ros::Time::now();  // need fix
-    // this->signals_publisher.publish(control_signals);
-
 }
 
 void Model::getAirdata()
