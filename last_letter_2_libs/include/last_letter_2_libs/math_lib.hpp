@@ -5,59 +5,49 @@
 
 class Polynomial
 {
-  public:
-    Polynomial();
-    ~Polynomial();
-    virtual double evaluate() { return 0; }
-    virtual double evaluate(double x) { return 0; }
-    virtual double evaluate(double x, double y) { return 0; }
+public:
+  Polynomial();
+  ~Polynomial();
+  virtual double evaluate() { return 0; }
+  virtual double evaluate(double x) { return 0; }
+  virtual double evaluate(double x, double y) { return 0; }
 };
 
 class Polynomial1D : public Polynomial
 {
-  public:
-    double coeffNo;
-    double *coeffs;
+public:
+  double coeffNo;
+  double *coeffs;
 
-    Polynomial1D(int maxOrder, double *coeffArray);
-    ~Polynomial1D();
-    double evaluate(double x);
+  Polynomial1D(int maxOrder, double *coeffArray);
+  ~Polynomial1D();
+  double evaluate(double x);
 };
 
 class Polynomial2D : public Polynomial
 {
-  public:
-    double coeffNo1, coeffNo2;
-    double *coeffs;
+public:
+  double coeffNo1, coeffNo2;
+  double *coeffs;
 
-    Polynomial2D(int maxOrder1, int maxOrder2, double *coeffArray);
-    ~Polynomial2D();
-    double evaluate(double x, double y);
-    // Important notes: maxOrder of variable y must be greater or equal to maxOrder of variable x
-    // Pass the coefficient array with the following ordering (eg for maxOrder1=1, maxOrder2=3):
-    // [00 01 02 03 10 11 12]
+  Polynomial2D(int maxOrder1, int maxOrder2, double *coeffArray);
+  ~Polynomial2D();
+  double evaluate(double x, double y);
+  // Important notes: maxOrder of variable y must be greater or equal to maxOrder of variable x
+  // Pass the coefficient array with the following ordering (eg for maxOrder1=1, maxOrder2=3):
+  // [00 01 02 03 10 11 12]
 };
 
 class Spline3 : public Polynomial
 {
-  public:
-    int breaksNo;
-    double *breaks, *coeffs;
+public:
+  int breaksNo;
+  double *breaks, *coeffs;
 
-    Spline3(int breaksNoIn, double *breaksIn, double *coeffsIn);
-    ~Spline3();
-    double evaluate(double x);
+  Spline3(int breaksNoIn, double *breaksIn, double *coeffsIn);
+  ~Spline3();
+  double evaluate(double x);
 };
 
-class FrameConversions
-{
-  private:
-    geometry_msgs::Vector3 v_in;
-    geometry_msgs::Vector3 v_out;
-
-  public:
-    FrameConversions(/* args */);
-    ~FrameConversions();
-    geometry_msgs::Vector3 NWUtoNED(geometry_msgs::Vector3);
-    geometry_msgs::Vector3 NEDtoNWU(geometry_msgs::Vector3);
-};
+void NWUtoNED(float &x, float &y, float &z);
+void NEDtoNWU(float &x, float &y, float &z);
