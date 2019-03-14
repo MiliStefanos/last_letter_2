@@ -7,16 +7,32 @@ find_package(catkin REQUIRED
   roscpp
   rosgraph_msgs
   std_srvs
+  geometry_msgs
 )
 find_package(Boost REQUIRED)
 
-catkin_package(DEPENDS
-  CATKIN_DEPENDS 
-  LIBRARIES math
+catkin_package(
+  INCLUDE_DIRS include
+  LIBRARIES math_lib
 )
 
-include_directories(include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
+include_directories(include 
+  ${catkin_INCLUDE_DIRS} 
+  ${Boost_INCLUDE_DIR}
+)
 
-add_library(math src/math_lib.cpp)
+add_library(math_lib src/math_lib.cpp)
 
-target_link_libraries(math ${catkin_LIBRARIES})
+target_link_libraries(math_lib ${catkin_LIBRARIES})
+
+
+install(TARGETS math_lib
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  FILES_MATCHING PATTERN ".h" PATTERN ".hpp"
+  PATTERN ".svn" EXCLUDE)

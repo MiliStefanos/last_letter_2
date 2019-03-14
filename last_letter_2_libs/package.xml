@@ -2,7 +2,7 @@
 <package format="2">
     <name>last_letter_2_libs</name>
     <version>0.0.0</version>
-    <description>Last_letter_2 math library</description>
+    <description>Last_letter_2 math and util libraries</description>
 
     <maintainer email="tailwhipx4@gmail.com">George Zogopoulos-Papaliakos</maintainer>
 
@@ -13,16 +13,20 @@
     <buildtool_depend>catkin</buildtool_depend>
     <build_depend>roscpp</build_depend>
     <build_depend>rosgraph_msgs</build_depend>
+    <build_depend>geometry_msgs</build_depend>
 
     <build_export_depend>roscpp</build_export_depend>
     <build_export_depend>rosgraph_msgs</build_export_depend>
+    <build_export_depend>geometry_msgs</build_export_depend>
 
     <exec_depend>roscpp</exec_depend>
     <exec_depend>rosgraph_msgs</exec_depend>
+    <exec_depend>geometry_msgs</exec_depend>
 
     <!-- The export tag contains other, unspecified, tags -->
     <export>
         <!-- Other tools can request additional information be placed here -->
         <!-- <gazebo_ros plugin_path="${prefix}/lib"	gazebo_media_path="${prefix}" /> -->
     </export>
+    
 </package>
