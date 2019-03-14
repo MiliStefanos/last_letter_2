@@ -105,8 +105,6 @@ void Environment::calcWind()
     wind.y=airdata.wind_y;
     wind.z=airdata.wind_z;
 
-    // printf("wind_w=%f      wind_y=%f\n",wind.x,wind.y);
-    
     if (isnan(wind.x) || isnan(wind.y) || isnan(wind.z))
     {
         ROS_FATAL("earth wind NAN in environmentNode!");

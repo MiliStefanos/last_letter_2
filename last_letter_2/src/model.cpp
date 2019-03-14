@@ -24,6 +24,7 @@ void Model::modelStep()
     getStates();
     getControlSignals();   // need to create control_singlas_server
     getAirdata();
+    calcAirdataTriplet();
     calcWrenches();
     applyWrenches();
     simulationStep();
@@ -97,8 +98,6 @@ void Model::getControlSignals()
     control_signals.delta_r=signals_srv.response.signals.delta_r;
     control_signals.delta_t=signals_srv.response.signals.delta_t;
     control_signals.header.stamp=ros::Time::now();  // need fix
-    // this->signals_publisher.publish(control_signals);
-
 }
 
 void Model::getAirdata()
@@ -129,7 +128,7 @@ void Model::getAirdata()
     airdata.temperature=air_data.response.airdata.temperature;
 }
 
-void Model::calcAdditionalData()
+void Model::calcAirdataTriplet()
 {
 
     // airspeed, alpha, beta
@@ -138,7 +137,6 @@ void Model::calcAdditionalData()
     w_r = model_states.w - airdata.wind_z;
     airspeed = sqrt(pow(u_r, 2) + pow(v_r, 2) + pow(w_r, 2));
     alpha = atan2(w_r, u_r);
-    beta;
     if (u_r == 0)
     {
         if (v_r == 0)
