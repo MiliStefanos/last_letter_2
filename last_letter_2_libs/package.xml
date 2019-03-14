@@ -2,7 +2,7 @@
 <package format="2">
     <name>last_letter_2_libs</name>
     <version>0.0.0</version>
-    <description>Last_letter_2 math library</description>
+    <description>Last_letter_2 math and util libraries</description>
 
     <maintainer email="tailwhipx4@gmail.com">George Zogopoulos-Papaliakos</maintainer>
 

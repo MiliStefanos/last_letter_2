@@ -13,7 +13,7 @@ find_package(Boost REQUIRED)
 
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES last_letter_2_libs
+  LIBRARIES math_lib
 )
 
 include_directories(include 
@@ -21,12 +21,12 @@ include_directories(include
   ${Boost_INCLUDE_DIR}
 )
 
-add_library(last_letter_2_libs src/last_letter_2_libs.cpp)
+add_library(math_lib src/math_lib.cpp)
 
-target_link_libraries(last_letter_2_libs ${catkin_LIBRARIES})
+target_link_libraries(math_lib ${catkin_LIBRARIES})
 
 
-install(TARGETS last_letter_2_libs
+install(TARGETS math_lib
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
