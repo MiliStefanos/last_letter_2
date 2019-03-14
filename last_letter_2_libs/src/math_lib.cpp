@@ -137,26 +137,16 @@ double Spline3::evaluate(double x)
     return value;
 }
 
-FrameConversions::FrameConversions(/* args */)
+//convert a vector from NWU to NED frame
+void NWUtoNED(float &x, float &y, float &z)
 {
+    y = -y;
+    z = -z;
 }
 
-FrameConversions::~FrameConversions()
+//convert a vector from NED to NWU frame
+void NEDtoNWU(float &x, float &y, float &z)
 {
-}
-
-geometry_msgs::Vector3 FrameConversions::NWUtoNED(geometry_msgs::Vector3 v_in)
-{
-    v_out.x = v_in.x;  //x axis
-    v_out.y = -v_in.y; //y axis
-    v_out.z = -v_in.z; //z axis
-    return v_out;
-}
-
-geometry_msgs::Vector3 FrameConversions::NEDtoNWU(geometry_msgs::Vector3 v_in)
-{
-    v_out.x = v_in.x;  //x axis
-    v_out.y = -v_in.y; //y axis
-    v_out.z = -v_in.z; //z axis
-    return v_out;
+    y = -y;
+    z = -z;
 }
