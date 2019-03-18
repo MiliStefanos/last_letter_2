@@ -10,13 +10,16 @@
 #include <last_letter_2_msgs/get_model_states_srv.h>
 #include <last_letter_2_msgs/model_wrenches.h>
 #include <geometry_msgs/Vector3Stamped.h>
+#include <geometry_msgs/TransformStamped.h>
+#include <tf2_ros/static_transform_broadcaster.h>
+#include <tf2_ros/transform_broadcaster.h>
+#include <tf2/LinearMath/Quaternion.h>
 #include <tf2_ros/transform_listener.h>
 #include <tf2/convert.h>
 #include <kdl_parser/kdl_parser.hpp>
 #include <boost/bind.hpp>
 #include <ctime> // for timer
 #include <iostream>
-
 
 namespace gazebo
 {
@@ -48,11 +51,6 @@ class model_plugin : public ModelPlugin
     std::thread rosQueueThread;
 
     last_letter_2_msgs::model_states model_states;
-
-    tf2_ros::Buffer tfBuffer;
-    geometry_msgs::Vector3Stamped world_vel;
-    geometry_msgs::Vector3Stamped body_vel;
-    tf2::Quaternion myQuaternion;
 
   public:
     model_plugin() : ModelPlugin() //constructor
@@ -92,28 +90,28 @@ class model_plugin : public ModelPlugin
         //Get initial states from parameter server
         XmlRpc::XmlRpcValue list;
 
-        if (!ros::param::getCached("init/position", list)) { ROS_FATAL("Invalid parameters for init/position in param server!"); ros::shutdown(); }
+        if (!ros::param::getCached("init/position", list)) { ROS_FATAL("Invalid parameters for init/position in param server!"); ros::shutdown();}
         ignition::math::Vector3d xyz_pose(list[0], list[1], list[2]);
         ROS_ASSERT(list[0].getType() == XmlRpc::XmlRpcValue::TypeDouble);
-        if (!ros::param::getCached("init/orientation", list)) { ROS_FATAL("Invalid parameters for init/orientation in param server!"); ros::shutdown(); }
+        if (!ros::param::getCached("init/orientation", list)) { ROS_FATAL("Invalid parameters for init/orientation in param server!"); ros::shutdown();}
         ignition::math::Vector3d rpy_pose(list[0], list[1], list[2]);
-        if (!ros::param::getCached("init/velLin", list)) { ROS_FATAL("Invalid parameters for init/velLin in param server!"); ros::shutdown(); }
+        if (!ros::param::getCached("init/velLin", list)) { ROS_FATAL("Invalid parameters for init/velLin in param server!"); ros::shutdown();}
         ignition::math::Vector3d velLin(list[0], list[1], list[2]);
-        if (!ros::param::getCached("init/velAng", list)) { ROS_FATAL("Invalid parameters for init/velAng in param server!"); ros::shutdown(); }
+        if (!ros::param::getCached("init/velAng", list)) { ROS_FATAL("Invalid parameters for init/velAng in param server!"); ros::shutdown();}
         ignition::math::Vector3d velAng(list[0], list[1], list[2]);
 
-        //Set the initial position and rotation 
+        //Set the initial position and rotation
         ignition::math::Pose3d init_pose;
         init_pose.Set(xyz_pose, rpy_pose);
         this->model->SetWorldPose(init_pose);
 
-        // Tranform linear and angular velocity from body frame to world frame        
+        // Tranform linear and angular velocity from body frame to world frame for initialized launching
         KDL::Frame tranformation_matrix;
         tf2::Stamped<KDL::Vector> v_out;
 
         tranformation_matrix = KDL::Frame(KDL::Rotation::EulerZYX(-rpy_pose[2], -rpy_pose[1], rpy_pose[0]), KDL::Vector(0, 0, 0));
         v_out = tf2::Stamped<KDL::Vector>(tranformation_matrix.Inverse() * KDL::Vector(velLin[0], velLin[1], velLin[2]), ros::Time::now(), "airfoil");
-        
+
         velLin[0] = v_out[0];
         velLin[1] = v_out[1];
         velLin[2] = v_out[2];
@@ -142,6 +140,7 @@ class model_plugin : public ModelPlugin
         }
     }
 
+    //service that apply the calculated aerodynamic and propulsion wrenches on relative links of model
     bool applyWrenchOnModel(last_letter_2_msgs::apply_wrench_srv::Request &req,
                             last_letter_2_msgs::apply_wrench_srv::Response &res)
     {
@@ -153,7 +152,7 @@ class model_plugin : public ModelPlugin
         force[1] = 0;
         force[2] = 0;
         model->GetLink("airfoil")->AddLinkForce(force);
-        model->GetJoint("body_to_arm")->SetVelocity(0, thrust);
+        model->GetJoint("body_FLU_to_arm")->SetVelocity(0, thrust);
 
         force[0] = req.model_wrenches.forces[0];
         force[1] = req.model_wrenches.forces[1];
@@ -200,6 +199,41 @@ class model_plugin : public ModelPlugin
         model_states.q = relAngVel[1];
         model_states.r = relAngVel[2];
         this->state_pub.publish(model_states);
+
+        //publish tranform between gazebo inertia NWU and body frame FLU
+        //if declaration is placed in data area of class, causes problems. So it is placed here.
+        static tf2_ros::TransformBroadcaster broadcaster_;
+        geometry_msgs::TransformStamped transformStamped_;
+        tf2::Quaternion quat_;
+
+        transformStamped_.header.stamp = ros::Time::now();
+        transformStamped_.header.frame_id = "inertial_NWU";
+        transformStamped_.child_frame_id = "body_FLU";
+        transformStamped_.transform.translation.x = model_states.x;
+        transformStamped_.transform.translation.y = model_states.y;
+        transformStamped_.transform.translation.z = model_states.z;
+        quat_.setRPY(model_states.roll, model_states.pitch, model_states.yaw);
+        transformStamped_.transform.rotation.x = quat_.x();
+        transformStamped_.transform.rotation.y = quat_.y();
+        transformStamped_.transform.rotation.z = quat_.z();
+        transformStamped_.transform.rotation.w = quat_.w();
+
+        broadcaster_.sendTransform(transformStamped_);
+        
+        //publish body static tranformations between body_FLU and body_FRD
+        transformStamped_.header.stamp = ros::Time::now();
+        transformStamped_.header.frame_id = "body_FLU";
+        transformStamped_.child_frame_id = "body_FRD";
+        transformStamped_.transform.translation.x = 0;
+        transformStamped_.transform.translation.y = 0;
+        transformStamped_.transform.translation.z = 0;
+        quat_.setRPY(M_PI, 0, 0);
+        transformStamped_.transform.rotation.x = quat_.x();
+        transformStamped_.transform.rotation.y = quat_.y();
+        transformStamped_.transform.rotation.z = quat_.z();
+        transformStamped_.transform.rotation.w = quat_.w();
+
+        broadcaster_.sendTransform(transformStamped_);
     }
 };
 // Register this plugin with the simulator

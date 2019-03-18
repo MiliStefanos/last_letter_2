@@ -7,6 +7,8 @@
 #include <last_letter_2_msgs/apply_wrench_srv.h>
 #include <last_letter_2_msgs/model_wrenches.h>
 #include <rosgraph_msgs/Clock.h>
+#include <tf2_ros/static_transform_broadcaster.h>
+#include <tf2/LinearMath/Quaternion.h>
 #include <ctime> // for timer
 #include <ros/service.h>
 #include <thread>
@@ -14,7 +16,7 @@
 
 namespace gazebo
 {
-class stepper : public WorldPlugin
+class world_plugin : public WorldPlugin
 {
   // Pointer to the World
 private:
@@ -40,14 +42,14 @@ private:
   std::thread rosQueueThread;
 
 public:
-  stepper() : WorldPlugin() //constructor
+  world_plugin() : WorldPlugin() //constructor
   {
   }
 
   void Load(physics::WorldPtr _World, sdf::ElementPtr _sdf) //Called when a Plugin is first created,
   {                                                         //and after the World has been loaded.Νot be blocking.
     this->World = _World;
-    ROS_INFO("stepper just started");
+    ROS_INFO("world_plugin just started");
 
     this->rosNode = new ros::NodeHandle; //Create a ros node for transport
     while (!this->rosNode->ok())
@@ -56,12 +58,36 @@ public:
     }
     // Spin up the queue helper thread.
     this->rosQueueThread =
-        std::thread(std::bind(&stepper::QueueThread, this));
+        std::thread(std::bind(&world_plugin::QueueThread, this));
     // Connect a callback to the world update start signal.
-    this->updateConnection = event::Events::ConnectWorldUpdateBegin(std::bind(&stepper::OnUpdate, this));
+    this->updateConnection = event::Events::ConnectWorldUpdateBegin(std::bind(&world_plugin::OnUpdate, this));
     ros::AdvertiseServiceOptions so = (ros::AdvertiseServiceOptions::create<last_letter_2_msgs::apply_wrench_srv>("last_letter_2/step",
-                                                                                                             boost::bind(&stepper::giveStep, this, _1, _2), ros::VoidPtr(), &this->rosQueue));
+                                                                                                                  boost::bind(&world_plugin::giveStep, this, _1, _2), ros::VoidPtr(), &this->rosQueue));
     this->srv_ = this->rosNode->advertiseService(so);
+
+    publishWorldStaticFrames();
+  }
+
+  // publish the relation between the world static frames Inertial_NWU-Inertial_NED 
+  void publishWorldStaticFrames()
+  {
+    static tf2_ros::StaticTransformBroadcaster static_broadcaster;
+    geometry_msgs::TransformStamped static_transformStamped;
+    tf2::Quaternion quat;
+
+    static_transformStamped.header.stamp = ros::Time::now();
+    static_transformStamped.header.frame_id = "inertial_NWU";
+    static_transformStamped.child_frame_id = "inertial_NED";
+    static_transformStamped.transform.translation.x = 0;
+    static_transformStamped.transform.translation.y = 0;
+    static_transformStamped.transform.translation.z = 0;
+    quat.setRPY(M_PI, 0, 0);
+    static_transformStamped.transform.rotation.x = quat.x();
+    static_transformStamped.transform.rotation.y = quat.y();
+    static_transformStamped.transform.rotation.z = quat.z();
+    static_transformStamped.transform.rotation.w = quat.w();
+
+    static_broadcaster.sendTransform(static_transformStamped);
   }
 
   //  ROS helper function that processes messages
@@ -76,8 +102,9 @@ public:
     }
   }
 
+  // service that enables the gazebo to make the next step
   bool giveStep(last_letter_2_msgs::apply_wrench_srv::Request &req,
-                 last_letter_2_msgs::apply_wrench_srv::Response &res)
+                last_letter_2_msgs::apply_wrench_srv::Response &res)
   {
     this->World->Step(1);
 
@@ -89,5 +116,5 @@ public:
   }
 };
 // Register this plugin with the simulator
-GZ_REGISTER_WORLD_PLUGIN(stepper)
+GZ_REGISTER_WORLD_PLUGIN(world_plugin)
 } // namespace gazebo
