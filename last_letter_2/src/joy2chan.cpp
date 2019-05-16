@@ -15,19 +15,19 @@ last_letter_2_msgs::joystick_input mixer(double *input, int mixerid)
 {
     last_letter_2_msgs::joystick_input channels;
     int i;
-    switch (mixerid)
-    {
-    case 0: // No mixing applied
-        for (i = 0; i < 11; i++)
-        {
-            channels.value[i] = (unsigned int)(input[i] * 500 + 1500);
-        }
-        return channels;
-    case 1: // Airplane mixing
-        channels.value[0] = (unsigned int)(input[0] * 500 + 1500);		 // Aileron channel
-        channels.value[1] = (unsigned int)(input[1] * 500 + 1500);		 // Elevator channel
+    // switch (mixerid)
+    // {
+    // case 0: // No mixing applied
+    //     for (i = 0; i < 11; i++)
+    //     {
+    //         channels.value[i] = (unsigned int)(input[i] * 500 + 1500);
+    //     }
+    //     return channels;
+    // case 1: // Airplane mixing
+        channels.value[0] = (unsigned int)(input[0] * 500 + 1500);		 // Roll channel
+        channels.value[1] = (unsigned int)(input[1] * 500 + 1500);		 // Pitch channel
         channels.value[2] = (unsigned int)((input[2] + 1) * 500 + 1000); // Throttle channel
-        channels.value[3] = (unsigned int)(input[3] * 500 + 1500);		 // Rudder channel
+        channels.value[3] = (unsigned int)(input[3] * 500 + 1500);		 // Yaw channel
         channels.value[4] = (unsigned int)(input[4] * 500 + 1500);		 // Steering gear channel
         channels.value[5] = (unsigned int)(input[5] * 1000 + 1000);		 // Breaks channel
         channels.value[6] = (unsigned int)(input[6] * 500 + 1500);		 // Generic channel
@@ -36,40 +36,40 @@ last_letter_2_msgs::joystick_input mixer(double *input, int mixerid)
         channels.value[9] = (unsigned int)(input[9] * 1000 + 1000);		 // Reset channel
         channels.value[10] = (unsigned int)(input[10] * 500 + 1500);	 // Generic channel
         return channels;
-    case 2: // Quadrotor mixing
-        // channels.value[0] = (unsigned int)(500 * ((input[2] + 1) - 0.11 * input[0] + 0.11 * input[1] - 0.11 * input[3]) + 1000);
-        // channels.value[1] = (unsigned int)(500 * ((input[2] + 1) + 0.11 * input[0] + 0.11 * input[1] + 0.11 * input[3]) + 1000);
-        // channels.value[2] = (unsigned int)(500 * ((input[2] + 1) - 0.11 * input[0] - 0.11 * input[1] + 0.11 * input[3]) + 1000);
-        // channels.value[3] = (unsigned int)(500 * ((input[2] + 1) + 0.11 * input[0] - 0.11 * input[1] - 0.11 * input[3]) + 1000);
-        channels.value[0] = (unsigned int)(500 * ((input[2] + 1) - 0.11 * input[0] + 0.11 * input[1] + 0.11 * input[3]) + 1000);
-        channels.value[1] = (unsigned int)(500 * ((input[2] + 1) - 0.11 * input[0] - 0.11 * input[1] - 0.11 * input[3]) + 1000);
-        channels.value[2] = (unsigned int)(500 * ((input[2] + 1) + 0.11 * input[0] - 0.11 * input[1] + 0.11 * input[3]) + 1000);
-        channels.value[3] = (unsigned int)(500 * ((input[2] + 1) + 0.11 * input[0] + 0.11 * input[1] - 0.11 * input[3]) + 1000);
-        channels.value[4] = (unsigned int)(input[4] * 500 + 1500);	// Generic channel
-        channels.value[5] = (unsigned int)(input[5] * 500 + 1500);	// Generic channel
-        channels.value[6] = (unsigned int)(input[6] * 500 + 1500);	// Generic channel
-        channels.value[7] = (unsigned int)(input[7] * 500 + 1500);	// Generic channel
-        channels.value[8] = (unsigned int)(input[8] * 500 + 1500);	// Generic channel
-        channels.value[9] = (unsigned int)(input[9] * 1000 + 1000);   // Reset channel
-        channels.value[10] = (unsigned int)(input[10] * 1000 + 1000); // Generic channel
-        return channels;
-    case 3: // Firefly Y6 mixing
-        channels.value[0] = (unsigned int)(500 * ((input[2] + 1) - 0.11 * input[0] + 0.11 * input[1] - 0.11 * input[3]) + 1000); // top-right motor channel
-        channels.value[1] = (unsigned int)(500 * ((input[2] + 1) - 0.11 * input[0] + 0.11 * input[1] + 0.11 * input[3]) + 1000); // bottom-right motor channel
-        channels.value[2] = (unsigned int)(500 * ((input[2] + 1) + 0.00 * input[0] - 0.11 * input[1] - 0.11 * input[3]) + 1000); // top-rear motor channel
-        channels.value[3] = (unsigned int)(500 * ((input[2] + 1) + 0.00 * input[0] - 0.11 * input[1] + 0.11 * input[3]) + 1000); // bottom-rear motor channel
-        channels.value[4] = (unsigned int)(500 * ((input[2] + 1) + 0.11 * input[0] + 0.11 * input[1] - 0.11 * input[3]) + 1000); // top-left motor channel
-        channels.value[5] = (unsigned int)(500 * ((input[2] + 1) + 0.11 * input[0] + 0.11 * input[1] + 0.11 * input[3]) + 1000); // bottom-left channel
-        channels.value[6] = (unsigned int)(-input[3] * 500 + 1500);																 // steering wheel channel
-        channels.value[7] = (unsigned int)(input[9] * 1000 + 1000);																 // reset channel
-        channels.value[8] = (unsigned int)(input[0] * 500 + 1500);																 // aileron channel
-        channels.value[9] = (unsigned int)(input[1] * 500 + 1500);																 // elevator channel
-        channels.value[10] = (unsigned int)(input[6] * 500 + 1500);																 // motor gimbal channel
-        return channels;
-    default:
-        ROS_FATAL("Invalid parameter for -/HID/mixerid- in param server!");
-        ros::shutdown();
-    }
+    //  case 2: // /Quadrotor mixing
+    //     channels.value[0] = (unsigned int)(500 * ((input[2] + 1) - 0.11 * input[0] + 0.11 * input[1] - 0.11 * input[3]) + 1000);
+    //     channels.value[1] = (unsigned int)(500 * ((input[2] + 1) + 0.11 * input[0] + 0.11 * input[1] + 0.11 * input[3]) + 1000);
+    //     channels.value[2] = (unsigned int)(500 * ((input[2] + 1) - 0.11 * input[0] - 0.11 * input[1] + 0.11 * input[3]) + 1000);
+    //     channels.value[3] = (unsigned int)(500 * ((input[2] + 1) + 0.11 * input[0] - 0.11 * input[1] - 0.11 * input[3]) + 1000);
+    //     channels.value[0] = (unsigned int)(500 * ((input[2] + 1) - 0.11 * input[0] + 0.11 * input[1] + 0.11 * input[3]) + 1000);
+    //     channels.value[1] = (unsigned int)(500 * ((input[2] + 1) - 0.11 * input[0] - 0.11 * input[1] - 0.11 * input[3]) + 1000);
+    //     channels.value[2] = (unsigned int)(500 * ((input[2] + 1) + 0.11 * input[0] - 0.11 * input[1] + 0.11 * input[3]) + 1000);
+    //     channels.value[3] = (unsigned int)(500 * ((input[2] + 1) + 0.11 * input[0] + 0.11 * input[1] - 0.11 * input[3]) + 1000);
+    //     channels.value[4] = (unsigned int)(input[4] * 500 + 1500);	// Generic channel
+    //     channels.value[5] = (unsigned int)(input[5] * 500 + 1500);	// Generic channel
+    //     channels.value[6] = (unsigned int)(input[6] * 500 + 1500);	// Generic channel
+    //     channels.value[7] = (unsigned int)(input[7] * 500 + 1500);	// Generic channel
+    //     channels.value[8] = (unsigned int)(input[8] * 500 + 1500);	// Generic channel
+    //     channels.value[9] = (unsigned int)(input[9] * 1000 + 1000);   // Reset channel
+    //     channels.value[10] = (unsigned int)(input[10] * 1000 + 1000); // Generic channel
+    //     return channels;
+    // case 3: // Firefly Y6 mixing
+    //     channels.value[0] = (unsigned int)(500 * ((input[2] + 1) - 0.11 * input[0] + 0.11 * input[1] - 0.11 * input[3]) + 1000); // top-right motor channel
+    //     channels.value[1] = (unsigned int)(500 * ((input[2] + 1) - 0.11 * input[0] + 0.11 * input[1] + 0.11 * input[3]) + 1000); // bottom-right motor channel
+    //     channels.value[2] = (unsigned int)(500 * ((input[2] + 1) + 0.00 * input[0] - 0.11 * input[1] - 0.11 * input[3]) + 1000); // top-rear motor channel
+    //     channels.value[3] = (unsigned int)(500 * ((input[2] + 1) + 0.00 * input[0] - 0.11 * input[1] + 0.11 * input[3]) + 1000); // bottom-rear motor channel
+    //     channels.value[4] = (unsigned int)(500 * ((input[2] + 1) + 0.11 * input[0] + 0.11 * input[1] - 0.11 * input[3]) + 1000); // top-left motor channel
+    //     channels.value[5] = (unsigned int)(500 * ((input[2] + 1) + 0.11 * input[0] + 0.11 * input[1] + 0.11 * input[3]) + 1000); // bottom-left channel
+    //     channels.value[6] = (unsigned int)(-input[3] * 500 + 1500);																 // steering wheel channel
+    //     channels.value[7] = (unsigned int)(input[9] * 1000 + 1000);																 // reset channel
+    //     channels.value[8] = (unsigned int)(input[0] * 500 + 1500);																 // aileron channel
+    //     channels.value[9] = (unsigned int)(input[1] * 500 + 1500);																 // elevator channel
+    //     channels.value[10] = (unsigned int)(input[6] * 500 + 1500);																 // motor gimbal channel
+    //     return channels;
+    // default:
+    //     ROS_FATAL("Invalid parameter for -/HID/mixerid- in param server!");
+    //     ros::shutdown();
+    // }
 }
 
 void joy2chan(sensor_msgs::Joy joyMsg)
