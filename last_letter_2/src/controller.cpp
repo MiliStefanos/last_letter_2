@@ -182,7 +182,7 @@ public:
     bool return_control_inputs(last_letter_2_msgs::get_control_inputs_srv::Request &req,
                                last_letter_2_msgs::get_control_inputs_srv::Response &res)
     {
-         float k1 = 0.25;
+        float k1 = 0.25;
         float l = 10;
         float k2 = 0.2;
         double M[16] = {k1, k1, k1, k1, 0, -l * k1, 0, l * k1, l * k1, 0, -l * k1, 0, -k2, k2, -k2, k2};
@@ -216,7 +216,7 @@ public:
 
         case 2: // Quadrotor mixing
             // Motor inputs
-            if (channels.value[0] == 1500 && channels.value[1] == 1500 && channels.value[3] == 1500)  //no signal of joystick
+            if ((channels.value[0] <1530 && channels.value[0] >1470) && (channels.value[1] <1530 && channels.value[1] >1470) && (channels.value[3] <1530 && channels.value[3] >1470))  //no signal of joystick
             {
                 roll = -2 * model_states.base_link_states.roll - 0.5*model_states.base_link_states.p;
                 pitch = 2 * model_states.base_link_states.pitch +0.5*model_states.base_link_states.q;
@@ -226,7 +226,6 @@ public:
             }
             else
             {
-
                 thrust = (float)channels.value[2] / 1000 - 1;
                 roll = (float)channels.value[0] / 1000 - 1.5;
                 pitch = (float)channels.value[1] / 1000 - 1.5;
